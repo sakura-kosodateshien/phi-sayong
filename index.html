@@ -52,7 +52,7 @@ body{
 #sceneRack{display:none;opacity:0;transition:opacity .7s ease}
 #sceneRack.show{display:block}
 #sceneRack.vis{opacity:1}
-#rackBg{position:fixed;inset:0;z-index:0;background:url('rack.jpg') center/cover no-repeat;
+#rackBg{position:fixed;inset:0;z-index:0;background:url('assets/rack.jpg') center/cover no-repeat;
   filter:blur(2.5px) brightness(.62) saturate(.9)}
 #rackBg::after{content:"";position:absolute;inset:0;
   background:radial-gradient(125% 95% at 50% 0%, rgba(60,44,84,.3) 0%, rgba(20,14,32,.62) 75%)}
@@ -246,7 +246,7 @@ footer{margin-top:30px;background:#0e0a18;padding-bottom:34px}
 <body>
 
 <section id="sceneStreet" style="--hx:62%; --hy:42%">
-  <img id="streetImg" src="storefront.jpg" alt="1980年代バンコクの本屋台">
+  <img id="streetImg" src="assets/storefront.jpg" alt="1980年代バンコクの本屋台">
   <div class="filmTint"></div>
   <button id="hotspot" class="hand">การ์ตูนผี 1 บาท<small>怪奇漫画はこちら ▸</small></button>
   <div id="streetCaption">
@@ -846,10 +846,36 @@ const EXTRA_THEMES = [
 ];
 const ALL_THEMES = THEMES.concat(EXTRA_THEMES);
 
-function makeComic(theme) {
+const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/generateCover";
+
+async function makeComic(theme) {
+  // ローカルでメタ情報を生成
   const meta = buildLocalMeta(theme);
   const scene = inferScene(theme);
-  return { ...meta, theme, palette: pick(PALETTES), svg: buildLocalSvg(scene) };
+  const base = { ...meta, theme, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null };
+
+  // Gemini画像生成を試みる
+  try {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 55000);
+    const r = await fetch(FUNC_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: ctrl.signal,
+      body: JSON.stringify({ theme, titleThai: meta.titleThai, monster: scene.monster, setting: scene.setting }),
+    });
+    clearTimeout(timer);
+    const data = await r.json();
+    if (data.imageBase64) {
+      base.imageEl = `<img src="data:image/png;base64,${data.imageBase64}" style="width:100%;display:block" alt="${meta.titleThai}">`;
+      base._remaining = data.remaining;
+    } else if (data.error === "sold_out") {
+      base._soldOut = true;
+    }
+  } catch(e) {
+    console.warn("Gemini画像生成失敗→SVGフォールバック", e.message);
+  }
+  return base;
 }
 
 function coverHTML(c) {
@@ -867,7 +893,7 @@ function coverHTML(c) {
       <div class="cTtlJp">${c.titleJp}</div>
     </div>
     <div class="cArt">
-      ${c.svg}
+      ${c.imageEl || c.svg}
       <div class="cBubble thai">${c.speechBubbleThai}</div>
       <div class="cPrice"><b>${c.priceBaht}</b><small class="thai">บาท</small></div>
     </div>
@@ -899,10 +925,12 @@ const LIB = new Map();
 let seq = 0;
 function register(c) { c.id = "c" + (++seq); LIB.set(c.id, c); return c; }
 
-// ---- レール（吊りクリップ） ----
+// ---- レール・ラックの初期生成（SVGのみ・即時表示） ----
 const railInner = document.getElementById("railInner");
 for (let i = 0; i < 7; i++) {
-  const c = register(makeComic(pick(ALL_THEMES)));
+  const meta = buildLocalMeta(pick(ALL_THEMES));
+  const scene = inferScene(meta.theme || "");
+  const c = register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null });
   const d = document.createElement("div");
   d.className = "hang";
   d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.42);
@@ -918,7 +946,11 @@ function addToRack(c, prepend = false) {
   if (prepend && pockets.firstChild) pockets.insertBefore(d, pockets.firstChild);
   else pockets.appendChild(d);
 }
-for (let i = 0; i < 12; i++) addToRack(register(makeComic(pick(ALL_THEMES))));
+for (let i = 0; i < 12; i++) {
+  const meta = buildLocalMeta(pick(ALL_THEMES));
+  const scene = inferScene(meta.titleJp || "");
+  addToRack(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
+}
 
 // ---- チップ ----
 const chips = document.getElementById("chips");
@@ -933,17 +965,35 @@ THEMES.forEach(t => {
 const stage = document.getElementById("summonStage");
 const loadingNote = document.getElementById("loadingNote");
 const btn = document.getElementById("summonBtn");
-function summon(t) {
+async function summon(t) {
   const theme = (t || document.getElementById("themeInput").value || pick(ALL_THEMES)).trim() || pick(ALL_THEMES);
   btn.disabled = true; stage.innerHTML = ""; loadingNote.style.display = "block";
-  setTimeout(() => {
-    const c = register(makeComic(theme));
+  // 経過秒表示
+  let sec = 0;
+  const tick = setInterval(() => {
+    sec++;
+    loadingNote.querySelector(".sec").textContent = sec + "秒…";
+  }, 1000);
+  try {
+    const c = register(await makeComic(theme));
     loadingNote.style.display = "none";
-    stage.innerHTML = scaled(coverHTML(c), 1) + scaled(backHTML(c), 1);
-    addToRack(c, true);
-    btn.disabled = false;
+    // 売り切れ表示
+    if (c._soldOut) {
+      stage.innerHTML = `<div style="color:#ffe9b0;text-align:center;padding:30px;font-size:15px">
+        本日の入荷が終了しました。<br>明日また来てください 👻</div>`;
+    } else {
+      // 残り枚数バッジ
+      const badge = c._remaining !== undefined
+        ? `<div style="color:#f4c20d;font-size:11px;text-align:center;margin-bottom:8px">本日の残り入荷: あと${c._remaining}冊</div>` : "";
+      stage.innerHTML = badge + scaled(coverHTML(c), 1) + scaled(backHTML(c), 1);
+      addToRack(c, true);
+    }
     if (stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, 700 + Math.random() * 600);
+  } finally {
+    clearInterval(tick);
+    btn.disabled = false;
+    loadingNote.style.display = "none";
+  }
 }
 btn.onclick = () => summon();
 document.getElementById("themeInput").addEventListener("keydown", e => { if (e.key === "Enter") summon(); });
