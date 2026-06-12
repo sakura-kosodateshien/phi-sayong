@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สำนักพิมพ์ผีสยอง BOOKS STORE｜タイ・バーツ怪奇漫画の屋台</title>
+<meta name="description" content="1980年代バンコクの路地裏で1バーツで売られていた怪奇漫画を、悪霊AIと自家印刷所が召喚する架空の漫画屋台。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@500;700;900&family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1a1208; --paper:#f0e6c8; --paper2:#e8dcb4;
+  --red:#c1121f; --yel:#f4c20d; --navy:#1d2a52; --teal:#1a5a52;
+  --rust:#8a3a1a; --wire:#8a929c;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Zen Maru Gothic','Noto Sans Thai',sans-serif;
+  background:#221a2e;
+  color:var(--ink);
+  min-height:100vh;
+}
+.thai{font-family:'Noto Sans Thai','Zen Maru Gothic',sans-serif}
+.hand{font-family:'Yusei Magic','Zen Maru Gothic',sans-serif}
+
+/* ===== シーン1: 店頭 ===== */
+#sceneStreet{position:fixed;inset:0;z-index:120;background:#0e0a18;overflow:hidden;
+  transition:opacity .45s ease, visibility 0s}
+#sceneStreet.gone{transition:opacity .55s ease .35s, visibility 0s linear 1s}
+#sceneStreet.gone{opacity:0;visibility:hidden;pointer-events:none}
+#streetImg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  transition:transform 1s cubic-bezier(.5,0,.3,1), filter 1s;
+  transform-origin:var(--hx,62%) var(--hy,40%)}
+#sceneStreet.zooming #streetImg{transform:scale(3.1);filter:brightness(.5) blur(2px)}
+#hotspot{position:absolute;left:var(--hx,62%);top:var(--hy,40%);transform:translate(-50%,-50%) rotate(-3deg);
+  background:var(--yel);border:3px solid #c79a08;color:var(--red);font-weight:900;
+  padding:9px 16px;font-size:clamp(13px,2.6vw,17px);line-height:1.4;cursor:pointer;
+  box-shadow:3px 4px 0 rgba(0,0,0,.5);animation:tagSway 2.6s ease-in-out infinite alternate;
+  font-family:'Yusei Magic','Noto Sans Thai',sans-serif;text-align:center;z-index:5}
+#hotspot small{display:block;font-size:10px;color:#5a4408}
+#hotspot::before{content:"";position:absolute;left:50%;top:-13px;width:3px;height:13px;background:#7a6a3a;transform:translateX(-50%)}
+@keyframes tagSway{from{transform:translate(-50%,-50%) rotate(-4deg)}to{transform:translate(-50%,-50%) rotate(-1deg)}}
+#streetCaption{position:absolute;left:0;right:0;bottom:0;padding:46px 16px 18px;text-align:center;
+  background:linear-gradient(180deg,transparent,rgba(8,4,14,.85));color:#ffe9b0;z-index:4}
+#streetCaption .nm{font-weight:900;font-size:clamp(16px,3.4vw,22px);text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+#streetCaption .hint{font-size:clamp(11px,2.2vw,13px);color:#d8c49a;margin-top:6px}
+#sceneStreet .filmTint{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(110% 100% at 50% 40%, transparent 55%, rgba(10,4,16,.5) 100%);mix-blend-mode:multiply}
+
+/* ===== シーン2: ラック（写真背景） ===== */
+#sceneRack{display:none;opacity:0;transition:opacity .7s ease}
+#sceneRack.show{display:block}
+#sceneRack.vis{opacity:1}
+#rackBg{position:fixed;inset:0;z-index:0;background:url('rack.jpg') center/cover no-repeat;
+  filter:blur(2.5px) brightness(.62) saturate(.9)}
+#rackBg::after{content:"";position:absolute;inset:0;
+  background:radial-gradient(125% 95% at 50% 0%, rgba(60,44,84,.3) 0%, rgba(20,14,32,.62) 75%)}
+#sceneRack>*:not(#rackBg){position:relative;z-index:1}
+.backTag{position:fixed;left:12px;top:12px;z-index:95;background:var(--paper);border:2.5px solid var(--ink);
+  color:var(--ink);font-weight:900;font-size:13px;padding:8px 14px;cursor:pointer;
+  box-shadow:2px 3px 0 rgba(0,0,0,.5);transform:rotate(-2deg);font-family:'Yusei Magic',sans-serif}
+
+/* ===== コダクローム調フィルム ===== */
+#film{filter:saturate(.94) sepia(.1) hue-rotate(-5deg) contrast(1.02);min-height:100vh;background:transparent}
+#grainOverlay{position:fixed;inset:0;pointer-events:none;z-index:90;opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.6 0.6 0.6 0 -0.78'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");}
+#vignette{position:fixed;inset:0;pointer-events:none;z-index:91;
+  background:radial-gradient(120% 100% at 50% 40%, transparent 60%, rgba(8,4,14,.55) 100%);}
+
+.wrap{max-width:1080px;margin:0 auto;padding:0 14px}
+
+/* ===== 看板 ===== */
+header.signboard{
+  background:linear-gradient(180deg,#27356b 0%, var(--navy) 60%, #131c3d 100%);
+  border-bottom:6px solid #0c1228;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+  padding:18px 0 14px; position:relative; overflow:hidden;
+}
+header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center}
+.bellLogo{width:54px;height:54px;border-radius:50%;background:#e85a8a;display:flex;align-items:center;justify-content:center;font-size:28px;border:3px solid #ffd9e6;box-shadow:0 2px 8px rgba(0,0,0,.4);flex:0 0 auto}
+.shopName{display:flex;flex-direction:column;align-items:center;text-align:center}
+.shopName .th{color:var(--yel);font-weight:900;font-size:clamp(26px,5.5vw,44px);line-height:1.1;text-shadow:2px 2px 0 #7a1020}
+.shopName .en{color:#ff9ab8;font-weight:900;letter-spacing:.18em;font-size:clamp(13px,2.4vw,20px);margin-top:2px}
+.shopSub{color:#cfd8ff;font-size:clamp(10px,1.9vw,13px);margin-top:8px;text-align:center;letter-spacing:.06em}
+.shopSub b{color:var(--yel)}
+
+/* ===== 吊りクリップレール ===== */
+#rail{position:relative;padding:8px 0 30px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+#rail .bar{position:absolute;top:14px;left:0;right:0;height:7px;min-width:100%;
+  background:linear-gradient(180deg,#cfd6dd,#7d858e 55%,#4a5058);border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,.5)}
+#railInner{display:flex;gap:18px;padding:18px 18px 0;width:max-content;margin:0 auto}
+.hang{transform-origin:50% 0;animation:sway 4.2s ease-in-out infinite alternate}
+.hang:nth-child(2n){animation-duration:5.1s;animation-delay:-1.2s}
+.hang:nth-child(3n){animation-duration:3.6s;animation-delay:-2.1s}
+@keyframes sway{from{transform:rotate(-1.6deg)}to{transform:rotate(1.6deg)}}
+.clip{width:26px;height:20px;margin:0 auto -6px;position:relative;z-index:3}
+.clip::before{content:"";position:absolute;left:4px;top:0;width:18px;height:14px;background:#15110c;clip-path:polygon(0 0,100% 0,78% 100%,22% 100%)}
+.clip::after{content:"";position:absolute;left:10px;top:-7px;width:6px;height:9px;border:2px solid #cfd6dd;border-bottom:none;border-radius:4px 4px 0 0}
+
+/* ===== 表紙（250px基準デザイン） ===== */
+.scl{position:relative;overflow:visible}
+.cover{
+  width:250px;background:var(--paper);
+  padding:7px 7px 9px;position:relative;transform-origin:0 0;
+  box-shadow:0 6px 16px rgba(0,0,0,.55), inset 0 0 60px rgba(120,80,20,.18);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.35 0 0 0 0 0.18 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)'/%3E%3C/svg%3E");
+  cursor:pointer; transition:filter .2s;
+}
+.cover:hover{filter:brightness(1.05)}
+.bands{display:flex;height:20px;gap:0}
+.bands span{flex:1;color:#fff;font-weight:900;font-size:8.5px;display:flex;align-items:center;justify-content:center;letter-spacing:.02em;text-shadow:1px 1px 0 rgba(0,0,0,.35)}
+.cBanner{margin-top:4px;background:var(--yel);border:2px solid #c79a08;color:var(--red);font-weight:900;font-size:11px;text-align:center;padding:3px 2px;letter-spacing:.02em}
+.cHead{position:relative;padding:6px 2px 4px;min-height:84px}
+.cPub{position:absolute;left:0;top:8px;width:62px;border:2px solid var(--red);background:#fffbe8;color:var(--red);text-align:center;font-weight:700;font-size:7.5px;padding:3px 2px;line-height:1.25}
+.cPub .star{display:block;font-size:14px;line-height:1}
+.cTtl{margin-left:66px;text-align:center;font-weight:900;font-size:25px;line-height:1.02;color:var(--red);
+  text-shadow:1.5px 1.5px 0 var(--yel), 3px 3px 0 #7a1020, -1px -1px 0 var(--yel);
+  transform:scaleY(1.12);letter-spacing:-.01em;word-break:break-all}
+.cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
+.cArt{position:relative;margin-top:5px;border:2.5px solid #2a1c08;background:#000;line-height:0}
+.cArt svg{width:100%;height:auto;display:block}
+.cBubble{position:absolute;left:7px;top:7px;background:#fffbe8;border:2.5px solid var(--ink);border-radius:50%;
+  padding:9px 13px;font-weight:900;font-size:11px;color:var(--ink);max-width:62%;line-height:1.2;text-align:center;
+  filter:drop-shadow(2px 2px 0 rgba(0,0,0,.4))}
+.cBubble::after{content:"";position:absolute;left:24%;bottom:-12px;border:7px solid transparent;border-top:12px solid var(--ink);transform:rotate(18deg)}
+.cPrice{position:absolute;right:7px;bottom:7px;background:var(--yel);border:2.5px solid var(--ink);
+  width:46px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:900;color:var(--red);box-shadow:2px 2px 0 rgba(0,0,0,.5);transform:rotate(2deg)}
+.cPrice b{font-size:21px;line-height:1}
+.cPrice small{font-size:9px;color:var(--ink)}
+
+/* 裏表紙 */
+.coverBack{width:250px;background:var(--paper2);padding:14px 13px;box-shadow:0 6px 16px rgba(0,0,0,.55), inset 0 0 50px rgba(120,80,20,.2);position:relative}
+.cbFrame{border:2.5px double var(--red);padding:12px 10px;min-height:200px}
+.cbTitle{text-align:center;color:var(--red);font-weight:900;letter-spacing:.5em;font-size:15px;margin-bottom:2px}
+.cbOrn{text-align:center;color:var(--red);font-size:10px;margin-bottom:10px}
+.cbStory{font-size:11px;margin:7px 0;border-bottom:1px dotted #b09a60;padding-bottom:6px}
+.cbStory .th{font-weight:900;font-size:12.5px}
+.cbStory .jp{color:#5a4a28;font-size:9.5px;margin-top:1px}
+.cbBlurb{font-size:10px;line-height:1.7;margin-top:10px;color:#3a2c12}
+.cbNote{font-size:8.5px;color:#8a7444;margin-top:9px}
+
+/* ===== カウンター（召喚所） ===== */
+#counter{padding:30px 0 14px}
+.counterBoard{
+  background:linear-gradient(180deg,#5a4630,#473522);border:4px solid #2c2012;border-radius:6px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5), inset 0 0 40px rgba(0,0,0,.35);
+  padding:22px 18px 26px;position:relative;
+}
+.yellowSign{
+  position:absolute;top:-18px;right:14px;transform:rotate(2.5deg);
+  background:var(--yel);border:3px solid #c79a08;color:var(--red);
+  font-weight:900;padding:8px 14px;font-size:14px;line-height:1.45;
+  box-shadow:3px 4px 0 rgba(0,0,0,.45);z-index:5;text-align:center;
+}
+.yellowSign small{display:block;color:#5a4408;font-size:10px;font-weight:700}
+.counterTitle{color:#ffe9b0;font-weight:900;font-size:clamp(18px,3.6vw,24px);text-align:center;text-shadow:2px 2px 0 rgba(0,0,0,.5)}
+.counterSub{color:#d8c49a;font-size:12px;text-align:center;margin-top:6px}
+.summonRow{display:flex;gap:10px;margin:18px auto 10px;max-width:560px}
+#themeInput{flex:1;padding:12px 14px;font-size:15px;border:3px solid #2c2012;border-radius:4px;background:#fdf6e0;font-family:inherit;min-width:0}
+#summonBtn{padding:12px 20px;font-size:16px;font-weight:900;color:#fff;background:linear-gradient(180deg,#e0303e,var(--red));
+  border:3px solid #6a0a12;border-radius:4px;cursor:pointer;font-family:inherit;white-space:nowrap;
+  box-shadow:0 4px 0 #6a0a12;transition:transform .08s}
+#summonBtn:active{transform:translateY(3px);box-shadow:0 1px 0 #6a0a12}
+#summonBtn:disabled{opacity:.6;cursor:wait}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;max-width:640px;margin:0 auto}
+.chip{background:rgba(255,240,200,.12);border:1.5px solid #b89a64;color:#f0dcb0;border-radius:999px;
+  padding:6px 13px;font-size:12px;cursor:pointer;font-family:inherit;transition:background .15s}
+.chip:hover{background:rgba(255,240,200,.25)}
+#summonStage{display:flex;gap:26px;justify-content:center;align-items:flex-start;flex-wrap:wrap;margin-top:24px;min-height:40px}
+#loadingNote{display:none;color:#ffe9b0;font-weight:700;text-align:center;padding:24px 0;font-size:14px}
+#loadingNote .gh{font-size:34px;display:block;margin-bottom:8px;animation:bob 1s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+
+/* ===== ワイヤーラック（棚） ===== */
+#rack{padding:34px 0 10px}
+.sectionTitle{color:#ffe9b0;font-weight:900;font-size:clamp(17px,3.4vw,22px);text-align:center;text-shadow:2px 2px 0 rgba(0,0,0,.5)}
+.sectionSub{color:#bca87e;font-size:11.5px;text-align:center;margin:6px 0 18px}
+.rackBoard{
+  background:linear-gradient(180deg,#3c4450,#262c36);
+  border:5px solid #14181f;border-radius:8px;padding:20px 14px;
+  box-shadow:0 12px 36px rgba(0,0,0,.55), inset 0 0 50px rgba(0,0,0,.45);
+}
+.pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.pocket{
+  position:relative;border:2.5px solid var(--wire);border-radius:4px;
+  background:rgba(255,255,255,.04);padding:10px 8px 8px;
+  display:flex;justify-content:center;
+  box-shadow:inset 0 0 18px rgba(0,0,0,.5);
+}
+.pocket::after{
+  content:"";position:absolute;left:-2px;right:-2px;bottom:16%;height:34%;
+  border:2.5px solid var(--wire);border-left:none;border-right:none;
+  background:repeating-linear-gradient(180deg,transparent 0 9px, rgba(160,170,182,.5) 9px 11px);
+  pointer-events:none;opacity:.55;border-radius:2px;
+}
+.pocket .scl{transition:transform .15s}
+.pocket:hover .scl{transform:translateY(-4px)}
+
+/* ===== 平積みとこのサイトについて ===== */
+#about{padding:34px 0 26px}
+.aboutRow{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.pile{position:relative;width:220px;height:170px;flex:0 0 auto;margin-top:10px}
+.pile .bundle{position:absolute;width:170px;height:26px;background:linear-gradient(180deg,#e8dcb4,#cdbd8c);
+  border:2px solid #6a583a;box-shadow:0 3px 6px rgba(0,0,0,.4)}
+.pile .bundle::before{content:"";position:absolute;left:46%;top:-4px;bottom:-4px;width:7px;background:#8a5a2a;opacity:.85}
+.pile .bundle::after{content:"";position:absolute;left:8px;right:8px;top:5px;height:3px;background:repeating-linear-gradient(90deg,#9a2020 0 22px, #20409a 22px 40px, #d8b820 40px 58px);opacity:.6}
+.aboutText{max-width:480px;color:#e2d2ac;font-size:13px;line-height:2}
+.aboutText h3{color:#ffe9b0;font-size:16px;margin-bottom:8px}
+.aboutText p+p{margin-top:10px}
+.aboutText .fine{font-size:10.5px;color:#9a8a66;margin-top:12px;line-height:1.8}
+
+/* ===== フッター：新聞ドレープ＋ステッカー ===== */
+footer{margin-top:30px;background:#0e0a18;padding-bottom:34px}
+.chromeBar{height:9px;background:linear-gradient(180deg,#dde3e9,#848c95 55%,#4c525a);box-shadow:0 3px 6px rgba(0,0,0,.6)}
+.papers{display:flex;justify-content:center;gap:22px;margin-top:-2px;flex-wrap:wrap}
+.np{width:120px;height:88px;background:#efe9d8;border:1.5px solid #b6ac90;position:relative;transform-origin:50% 0;box-shadow:0 5px 10px rgba(0,0,0,.5)}
+.np::before{content:"";position:absolute;inset:9px 9px auto;height:13px;background:#1c1612}
+.np::after{content:"";position:absolute;left:9px;right:9px;top:28px;bottom:9px;
+  background:repeating-linear-gradient(180deg,#9a917a 0 2px, transparent 2px 7px)}
+.np:nth-child(1){transform:rotate(-2deg)} .np:nth-child(3){transform:rotate(1.5deg)}
+.stickers{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:24px;padding:0 14px}
+.stk{font-weight:900;font-size:11px;padding:5px 12px;border-radius:3px;color:#fff;letter-spacing:.04em;box-shadow:1px 2px 0 rgba(0,0,0,.5)}
+.credit{color:#7a6c8e;font-size:10.5px;text-align:center;margin-top:26px;line-height:1.9;padding:0 14px}
+.credit a{color:#b09ad0}
+
+/* ===== モーダル ===== */
+#modal{position:fixed;inset:0;background:rgba(8,4,14,.86);z-index:200;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:34px 12px}
+#modal.open{display:flex}
+#modalInner{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start;position:relative;max-width:640px}
+#modalClose{position:fixed;top:14px;right:16px;z-index:210;background:var(--yel);border:3px solid #6a0a12;color:var(--red);
+  font-weight:900;font-size:18px;width:44px;height:44px;border-radius:50%;cursor:pointer;box-shadow:0 3px 0 #6a0a12}
+.teeBtn{display:block;width:100%;margin-top:12px;padding:10px;text-align:center;font-weight:900;font-size:12px;
+  background:#3a3144;color:#b8a8d0;border:2px dashed #6a5a84;border-radius:4px}
+
+@media (max-width:560px){
+  #summonStage{gap:16px}
+  .yellowSign{position:static;display:inline-block;margin:0 auto 14px;transform:rotate(-1.5deg)}
+  .counterBoard{display:flex;flex-direction:column;align-items:center}
+  .counterBoard>*{width:100%}
+  .counterBoard .yellowSign{width:auto}
+}
+</style>
+</head>
+<body>
+
+<section id="sceneStreet" style="--hx:62%; --hy:42%">
+  <img id="streetImg" src="storefront.jpg" alt="1980年代バンコクの本屋台">
+  <div class="filmTint"></div>
+  <button id="hotspot" class="hand">การ์ตูนผี 1 บาท<small>怪奇漫画はこちら ▸</small></button>
+  <div id="streetCaption">
+    <div class="nm">สำนักพิมพ์ผีสยอง BOOKS STORE</div>
+    <div class="hint">黄色い札をつまむと、バーツコミックの棚に近づきます</div>
+  </div>
+</section>
+
+<div id="sceneRack">
+<div id="rackBg"></div>
+<button class="backTag" id="backTag">◂ 屋台にもどる</button>
+<div id="film">
+
+<header class="signboard">
+  <div class="wrap">
+    <div class="row">
+      <div class="bellLogo">🔔</div>
+      <div class="shopName">
+        <span class="th thai">สำนักพิมพ์ผีสยอง</span>
+        <span class="en">PHI SAYONG BOOKS STORE</span>
+      </div>
+      <div class="bellLogo" style="background:#e8b83a">👻</div>
+    </div>
+    <div class="shopSub thai">จำหน่าย <b>การ์ตูนผีเล่มละบาท</b> ・ หนังสือพิมพ์ ・ นิตยสาร ｜ 1980年代バンコク・路地裏の怪奇漫画屋台（架空）</div>
+  </div>
+</header>
+
+<div id="rail">
+  <div class="bar"></div>
+  <div id="railInner"></div>
+</div>
+
+<main class="wrap">
+
+  <section id="counter">
+    <div class="counterBoard">
+      <div class="yellowSign hand">本日も営業中・召喚無料<small>AI印刷所は近日開店（1日限定入荷）</small></div>
+      <div class="counterTitle">怪奇漫画 召喚カウンター</div>
+      <div class="counterSub">テーマを告げると、店の奥の印刷所が一冊刷り上げます</div>
+      <div class="summonRow">
+        <input id="themeInput" placeholder="例: 人食い沼の悪霊" maxlength="30">
+        <button id="summonBtn">召喚する</button>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div id="loadingNote"><span class="gh">👻</span>印刷所のインクが乾くまでお待ちください…</div>
+      <div id="summonStage"></div>
+    </div>
+  </section>
+
+  <section id="rack">
+    <div class="sectionTitle">本日の棚</div>
+    <div class="sectionSub">ワイヤーラックの一冊をつまむと、裏表紙まで読めます（毎日入荷が変わります）</div>
+    <div class="rackBoard">
+      <div class="pockets" id="pockets"></div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="aboutRow">
+      <div class="pile" id="pile"></div>
+      <div class="aboutText">
+        <h3>この屋台について</h3>
+        <p>1970〜80年代のタイでは、16ページ1バーツの怪奇漫画「การ์ตูนเล่มละบาท」が路上の屋台や床屋で月100万部規模で売られ、読み捨てられていきました。クラスー、ピーポップ、呪われた僧——毒々しい表紙の数々は、今やほとんど現存しません。</p>
+        <p>この屋台は、その失われた表紙たちを機械の印刷所が「あったかもしれない一冊」として召喚する、架空の出版社です。実在の作品・作家・出版社とは関係ありません。</p>
+        <p class="fine">※ 表紙はすべてこのページ上でその場で生成されるオリジナルです。タイトル・収録作品・あらすじも実在しません。お気に入りの一冊が召喚できたらスクリーンショットでお持ち帰りください——なにしろ1バーツの読み捨て漫画なので、ページを離れると二度と同じ本には会えません。</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="chromeBar"></div>
+  <div class="papers"><div class="np"></div><div class="np"></div><div class="np"></div></div>
+  <div class="stickers" id="stickers"></div>
+  <div class="credit">
+    สำนักพิมพ์ผีสยอง PHI SAYONG BOOKS STORE — a fictional one-baht horror comics stall.<br>
+    Printed somewhere in 1980s Bangkok. All covers are generated &amp; fictional.
+  </div>
+</footer>
+
+</div><!-- /film -->
+</div><!-- /sceneRack -->
+<div id="grainOverlay"></div>
+<div id="vignette"></div>
+
+<div id="modal">
+  <button id="modalClose">✕</button>
+  <div id="modalInner"></div>
+</div>
+
+<script>
+
+// ===== 80's Thai Baht Horror Comic Generator =====
+// Vintage การ์ตูนเล่มละบาท (1-baht comic) cover generator powered by Claude
+
+const THEMES = [
+  "ピー・クラスー(首だけ妖怪)",
+  "人食い沼の悪霊",
+  "呪われた僧侶",
+  "墓場から蘇る花嫁",
+  "蛇女ナーギニーの復讐",
+  "幽霊バス深夜便",
+  "イサーンの村の食人鬼",
+  "運河に沈む女の霊",
+];
+
+const PALETTES = [
+  { band1: "#d62828", band2: "#f4c20d", band3: "#1a8a3c" },
+  { band1: "#f4c20d", band2: "#d62828", band3: "#2a6db5" },
+  { band1: "#1a8a3c", band2: "#f4c20d", band3: "#d62828" },
+];
+
+// =====================================================================
+//  80年代タイ1バーツ怪奇漫画 表紙描画エンジン
+//  様式の根拠: クラスー（内臓を引きずる生首）、ピーポップ、長い舌の亡霊、
+//  腐敗肌・膿疱・充血眼、怯える村人、安価な印刷の網点と手描きの歪み
+// =====================================================================
+const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const R = (a, b) => a + Math.random() * (b - a);
+const RI = (a, b) => Math.floor(R(a, b + 1));
+
+const SCENES = {
+  sunset:   { sky: ["#ff8c2a", "#c2331e", "#4a0c1a"], moon: "#ffe066", ground: "#26120d", sil: "#170a08" },
+  midnight: { sky: ["#2a4a7e", "#13204a", "#06081c"], moon: "#ece8cc", ground: "#0a1426", sil: "#04070f" },
+  miasma:   { sky: ["#6a8a40", "#27432a", "#0c1c12"], moon: "#e0eea8", ground: "#0e2014", sil: "#061009" },
+  blood:    { sky: ["#b01c2e", "#5a0c1e", "#1c0410"], moon: "#ffb84a", ground: "#1c0a10", sil: "#0d040a" },
+};
+const SKINS = [
+  ["#b8d08a", "#6a8a44", "#3a4f22"], // 腐敗緑
+  ["#c0a0d8", "#7a5aa0", "#3d2a5a"], // 死斑紫
+  ["#a8c8b8", "#5a8a78", "#2c4a3e"], // 水死青緑
+  ["#d8c890", "#a08a4a", "#5a4a20"], // 土気色
+];
+
+// --- 共通パーツ ---
+const bats = (n) => {
+  let s = "";
+  for (let i = 0; i < n; i++) {
+    const x = R(30, 370), y = R(30, 150), w = R(7, 14);
+    s += `<path d="M${x - w} ${y} Q${x - w / 2} ${y - w * 0.8} ${x} ${y} Q${x + w / 2} ${y - w * 0.8} ${x + w} ${y}" fill="none" stroke="#0a0508" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  return s;
+};
+const mist = () => {
+  let s = "";
+  for (let i = 0; i < 4; i++)
+    s += `<ellipse cx="${R(60, 340)}" cy="${R(390, 450)}" rx="${R(60, 110)}" ry="${R(10, 18)}" fill="#e8e8e0" opacity="${R(0.07, 0.14)}"/>`;
+  return s;
+};
+const bloodDrips = () => {
+  let s = `<rect x="0" y="0" width="400" height="7" fill="#7a0a14"/>`;
+  for (let x = R(5, 25); x < 395; x += R(22, 48)) {
+    const len = R(14, 60);
+    s += `<path d="M${x} 4 Q${x - 4} ${len * 0.5} ${x} ${len} Q${x + 4} ${len * 0.5} ${x} 4 Z" fill="#7a0a14"/><circle cx="${x}" cy="${len}" r="3.2" fill="#7a0a14"/>`;
+  }
+  for (let i = 0; i < 7; i++)
+    s += `<circle cx="${R(20, 380)}" cy="${R(380, 470)}" r="${R(1.5, 4.5)}" fill="#8a0c14" opacity="0.8"/>`;
+  return s;
+};
+const sweat = (x, y) =>
+  `<path d="M${x} ${y} q-3 6 0 9 q3 -3 0 -9Z" fill="#cfe8ff" stroke="#1a1a1a" stroke-width="1.2"/>`;
+
+// --- 怯える犠牲者（振り返って絶叫） ---
+const victim = (x, y, sc, skin = "#e8b88a") => `
+<g transform="translate(${x} ${y}) scale(${sc})">
+  <path d="M-48 62 Q-52 20 -22 8 L22 8 Q52 20 48 62 Z" fill="${pick(["#d8b830", "#3a6ab0", "#b03050", "#3a8a50"])}" stroke="#1a1a1a" stroke-width="4"/>
+  <path d="M-30 14 L-54 -30 M-54 -30 L-66 -38 M-54 -30 L-63 -25 M-54 -30 L-58 -19 M-54 -30 L-50 -42" fill="none" stroke="${skin}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M-30 14 L-54 -30" fill="none" stroke="#1a1a1a" stroke-width="11.5" stroke-linecap="round" opacity="0.28"/>
+  <path d="M32 16 L56 -22 M56 -22 L68 -28 M56 -22 L66 -16 M56 -22 L60 -10 M56 -22 L52 -34" fill="none" stroke="${skin}" stroke-width="8.5" stroke-linecap="round"/>
+  <path d="M32 16 L56 -22" fill="none" stroke="#1a1a1a" stroke-width="11" stroke-linecap="round" opacity="0.28"/>
+  <ellipse cx="0" cy="-22" rx="30" ry="35" fill="${skin}" stroke="#1a1a1a" stroke-width="4"/>
+  <path d="M-30 -34 Q-26 -64 0 -60 Q28 -64 30 -32 Q14 -48 0 -46 Q-16 -48 -30 -34Z" fill="#14080a" stroke="#1a1a1a" stroke-width="3"/>
+  <path d="M-16 -48 Q0 -54 16 -48 M-13 -43 Q0 -48 13 -43" fill="none" stroke="#1a1a1a" stroke-width="1.8" opacity="0.55"/>
+  <ellipse cx="-11" cy="-26" rx="7" ry="8" fill="#fff" stroke="#1a1a1a" stroke-width="2.6"/>
+  <ellipse cx="12" cy="-26" rx="7" ry="8" fill="#fff" stroke="#1a1a1a" stroke-width="2.6"/>
+  <circle cx="-11" cy="-30" r="1.8" fill="#1a1a1a"/><circle cx="12" cy="-30" r="1.8" fill="#1a1a1a"/>
+  <path d="M-22 -34 L-5 -44 M22 -34 L5 -44" stroke="#1a1a1a" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M-20 -14 q4 6 8 7 M20 -14 q-4 6 -8 7" stroke="#1a1a1a" stroke-width="1.8" fill="none" opacity="0.5"/>
+  <ellipse cx="1" cy="2" rx="13" ry="20" fill="#1c0608" stroke="#1a1a1a" stroke-width="3.2"/>
+  <path d="M-9 -10 L-4 -5 L1 -10 L6 -5 L11 -10" fill="none" stroke="#f0e8d0" stroke-width="4"/>
+  <ellipse cx="1" cy="10" rx="6.5" ry="5.5" fill="#a02030"/>
+  ${sweat(-35, -46)}${sweat(35, -42)}${sweat(29, -8)}${sweat(-30, -4)}
+  <path d="M-44 -52 q-7 -4 -9 -11 M44 -50 q7 -4 9 -11 M0 -70 q0 -8 3 -12" stroke="#fff" stroke-width="2.6" opacity="0.65" fill="none" stroke-linecap="round"/>
+</g>`;
+
+// --- 膿疱クラスタ（病的な黄緑の芯） ---
+const boils = (cx, cy, rx, ry, n, dark) => {
+  let s = "";
+  for (let i = 0; i < n; i++) {
+    const a = R(0, Math.PI * 2), x = cx + Math.cos(a) * R(0, rx), y = cy + Math.sin(a) * R(0, ry), r = R(3.5, 7.5);
+    s += `<circle cx="${x}" cy="${y}" r="${r}" fill="${dark}"/><circle cx="${x}" cy="${y}" r="${r * 0.55}" fill="#c2cc5a"/><circle cx="${x - r * 0.25}" cy="${y - r * 0.28}" r="${r * 0.18}" fill="#fff" opacity="0.85"/>`;
+  }
+  return s;
+};
+// --- 充血した眼球（落ち窪んだ眼窩・重い瞼・スリット瞳孔対応） ---
+const gooEye = (x, y, r, iris, slit = false) => `
+  <ellipse cx="${x}" cy="${y + r * 0.2}" rx="${r * 1.3}" ry="${r * 1.15}" fill="#14080a" opacity="0.45"/>
+  <ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r * 1.05}" fill="#e8dcae" stroke="#14100a" stroke-width="3.5"/>
+  <path d="M${x - r * 0.85} ${y - r * 0.25} L${x - r * 0.3} ${y - r * 0.05} M${x - r * 0.8} ${y + r * 0.4} L${x - r * 0.25} ${y + r * 0.22} M${x + r * 0.85} ${y - r * 0.2} L${x + r * 0.3} ${y + r * 0.05} M${x + r * 0.7} ${y + r * 0.5} L${x + r * 0.25} ${y + r * 0.28}" stroke="#c02020" stroke-width="1.8" fill="none"/>
+  <circle cx="${x}" cy="${y + r * 0.12}" r="${r * 0.42}" fill="${iris}"/>
+  ${slit
+    ? `<ellipse cx="${x}" cy="${y + r * 0.12}" rx="${r * 0.1}" ry="${r * 0.36}" fill="#0a0508"/>`
+    : `<circle cx="${x}" cy="${y + r * 0.12}" r="${r * 0.15}" fill="#0a0508"/>`}
+  <circle cx="${x - r * 0.16}" cy="${y - r * 0.06}" r="${r * 0.08}" fill="#fff"/>
+  <path d="M${x - r * 1.08} ${y - r * 0.55} Q${x} ${y + r * 0.02} ${x + r * 1.08} ${y - r * 0.55}" stroke="#14100a" stroke-width="${r * 0.48}" fill="none" stroke-linecap="round"/>
+  <path d="M${x - r * 0.8} ${y + r * 1.05} Q${x} ${y + r * 1.42} ${x + r * 0.8} ${y + r * 1.05}" stroke="#14080a" stroke-width="${r * 0.17}" fill="none" opacity="0.6"/>`;
+// --- 涎 ---
+const drool = (x, y, len) =>
+  `<path d="M${x} ${y} q-2 ${len * 0.5} 1.5 ${len}" stroke="#d8ecd8" stroke-width="3" fill="none" opacity="0.75"/><circle cx="${x + 1.5}" cy="${y + len}" r="2.6" fill="#d8ecd8" opacity="0.75"/>`;
+// --- ギザギザの歯列 ---
+const teethRow = (x0, x1, y, h, up) => {
+  let s = "";
+  for (let x = x0; x < x1 - 6; x += R(11, 16)) {
+    const w = R(8, 13), hh = h * R(0.7, 1.25);
+    s += `<polygon points="${x},${y} ${x + w / 2},${y + (up ? -hh : hh)} ${x + w},${y}" fill="#e8dfb8" stroke="#1a1a1a" stroke-width="2"/>`;
+  }
+  return s;
+};
+// --- 鉤爪の手 ---
+const clawHand = (x, y, sc, rot, skin, mir = 1) => {
+  let f = "";
+  for (let i = 0; i < 5; i++) {
+    const a = -56 + i * 28, len = R(48, 70);
+    f += `<g transform="rotate(${a})"><path d="M0 0 Q${len * 0.22} ${-len * 0.5} 0 ${-len}" fill="none" stroke="#14100a" stroke-width="17" stroke-linecap="round" opacity="0.9"/><path d="M0 0 Q${len * 0.22} ${-len * 0.5} 0 ${-len}" fill="none" stroke="${skin}" stroke-width="13" stroke-linecap="round"/><path d="M-1 ${-len + 3} q-7 -13 3 -23 q8 11 -3 23Z" fill="#d8d0a8" stroke="#14100a" stroke-width="2.6"/></g>`;
+  }
+  return `<g transform="translate(${x} ${y}) scale(${sc * mir},${sc}) rotate(${rot})"><ellipse cx="0" cy="10" rx="26" ry="31" fill="${skin}" stroke="#14100a" stroke-width="5"/><path d="M-14 -2 q6 8 14 6 M-2 14 q8 4 16 -2" stroke="#14100a" stroke-width="2.4" fill="none" opacity="0.6"/>${f}</g>`;
+};
+
+// --- 背景（舞台） ---
+const palm = (x, h, sil, flip) => {
+  let fr = "";
+  for (let i = 0; i < 6; i++) {
+    const a = -150 + i * 32;
+    fr += `<path d="M0 0 Q${R(28, 44)} ${-R(4, 14)} ${R(52, 70)} ${R(8, 26)}" fill="none" stroke="${sil}" stroke-width="8" stroke-linecap="round" transform="rotate(${a})"/>`;
+  }
+  return `<g transform="translate(${x} ${410 - h}) scale(${flip ? -1 : 1},1)"><path d="M0 ${h} Q${R(-18, 18)} ${h * 0.5} 0 0" fill="none" stroke="${sil}" stroke-width="13"/><g>${fr}</g></g>`;
+};
+const settingLayer = (key, sc) => {
+  const sil = sc.sil;
+  if (key === "graveyard") {
+    let m = "";
+    for (let i = 0; i < 4; i++) {
+      const x = R(30, 340), w = R(48, 80);
+      m += `<ellipse cx="${x}" cy="412" rx="${w / 2}" ry="${R(12, 20)}" fill="${sil}"/><rect x="${x - 4}" y="${R(360, 382)}" width="8" height="42" fill="${sil}" transform="rotate(${R(-14, 14)} ${x} 400)"/>`;
+    }
+    return m + `<path d="M352 408 L352 300 M352 322 Q316 306 308 282 M352 340 Q386 330 394 300" fill="none" stroke="${sil}" stroke-width="10" stroke-linecap="round"/>`;
+  }
+  if (key === "temple")
+    return `<g fill="${sil}"><polygon points="60,410 84,410 80,330 64,330"/><polygon points="56,332 88,332 72,288"/><rect x="69" y="270" width="6" height="22"/><polygon points="300,412 396,412 390,360 306,360"/><polygon points="294,362 402,362 348,316"/><path d="M300 360 L290 338 M396 360 L406 338" stroke="${sil}" stroke-width="6"/></g>`;
+  if (key === "swamp") {
+    let rp = "";
+    for (let i = 0; i < 6; i++)
+      rp += `<path d="M${R(20, 250)} ${R(412, 462)} h${R(40, 110)}" stroke="#0a0d18" stroke-width="3" opacity="0.5"/>`;
+    let reeds = "";
+    for (let i = 0; i < 8; i++) {
+      const x = R(290, 396);
+      reeds += `<path d="M${x} 470 Q${x + R(-8, 8)} ${R(400, 430)} ${x + R(-12, 12)} ${R(370, 400)}" fill="none" stroke="${sil}" stroke-width="4"/>`;
+    }
+    return `<rect x="0" y="404" width="400" height="80" fill="#101a30" opacity="0.85"/>${rp}<ellipse cx="200" cy="420" rx="56" ry="6" fill="${sc.moon}" opacity="0.25"/>${reeds}`;
+  }
+  if (key === "village")
+    return `<g fill="${sil}"><rect x="290" y="330" width="92" height="52"/><polygon points="280,332 392,332 336,292"/><rect x="300" y="382" width="7" height="34"/><rect x="366" y="382" width="7" height="34"/><rect x="318" y="344" width="18" height="16" fill="#ff9a2a" opacity="0.95"/><path d="M345 382 l16 34 M361 382 l-16 34" stroke="${sil}" stroke-width="5"/></g>` +
+      palm(46, R(110, 150), sil, false);
+  // jungle
+  let leaves = "";
+  for (let i = 0; i < 5; i++) {
+    const x = pick([R(-10, 60), R(340, 410)]), y = R(420, 480);
+    leaves += `<path d="M${x} ${y} Q${x + R(-50, 50)} ${y - R(60, 110)} ${x + R(-90, 90)} ${y - R(20, 50)} Q${x + R(-30, 30)} ${y - R(10, 30)} ${x} ${y}Z" fill="${sil}"/>`;
+  }
+  return palm(40, R(120, 165), sil, false) + palm(366, R(100, 145), sil, true) + leaves;
+};
+
+// --- モンスター達 ---
+const ghoulMonster = (skin) => {
+  const [lo, mid, dk] = skin;
+  const faceD = "M150 376 Q134 286 150 216 Q170 144 205 142 Q240 144 260 216 Q276 286 260 376 Q238 402 205 404 Q172 402 150 376Z";
+  let grin = "";
+  for (let x = 158; x < 248; x += 13.5) {
+    grin += `<rect x="${x}" y="${330 + R(-1.5, 1.5)}" width="11" height="13.5" rx="2" fill="#ddd0a0" stroke="#3a2c14" stroke-width="1.7"/>`;
+    grin += `<rect x="${x + 1}" y="${345 + R(-1.5, 1.5)}" width="10" height="12" rx="2" fill="#cfc294" stroke="#3a2c14" stroke-width="1.7"/>`;
+  }
+  return `
+  <ellipse cx="205" cy="230" rx="160" ry="175" fill="url(#aura)"/>
+  <path d="M92 470 Q56 280 100 168 Q136 82 205 78 Q274 82 310 168 Q354 280 318 470Z" fill="#42351f" stroke="#14100a" stroke-width="5.5"/>
+  <path d="M128 470 Q102 300 126 204 Q152 120 205 116 Q258 120 284 204 Q308 300 282 470Z" fill="#221808" stroke="#14100a" stroke-width="4"/>
+  <path d="M104 230 Q94 330 110 444 M306 230 Q316 330 300 444 M205 82 Q166 96 146 136 M205 82 Q244 96 264 136" stroke="#14100a" stroke-width="3.4" fill="none" opacity="0.55"/>
+  <path d="M96 320 Q90 390 100 460 L128 460 Q116 390 118 320Z" fill="url(#hatch)" opacity="0.5"/>
+  <path d="M304 320 Q310 390 300 460 L282 460 Q292 390 290 320Z" fill="url(#hatch)" opacity="0.5"/>
+  <path d="${faceD}" fill="url(#skin)" stroke="#14100a" stroke-width="4.5"/>
+  <path d="${faceD}" fill="url(#pebble)" opacity="0.8"/>
+  <path d="M150 230 Q142 300 152 364 Q168 390 188 398 Q166 330 168 240Z" fill="url(#hatch)" opacity="0.5"/>
+  <path d="M256 226 Q266 300 256 366 Q244 388 230 396 Q248 330 244 238Z" fill="#14080a" opacity="0.28"/>
+  <path d="M148 224 L198 210 L202 230 L152 244Z M262 224 L212 210 L208 230 L258 244Z" fill="#0c0806"/>
+  <path d="M198 216 l-4 24 M205 214 l0 26 M212 216 l4 24" stroke="#14080a" stroke-width="2.6" fill="none"/>
+  <ellipse cx="172" cy="256" rx="21" ry="17" fill="#0a0604"/>
+  <ellipse cx="238" cy="256" rx="21" ry="17" fill="#0a0604"/>
+  <circle cx="172" cy="256" r="8.5" fill="url(#eyeGlow)"/><circle cx="172" cy="257" r="2.8" fill="#0a0508"/>
+  <circle cx="238" cy="256" r="8.5" fill="url(#eyeGlow)"/><circle cx="238" cy="257" r="2.8" fill="#0a0508"/>
+  <path d="M152 268 q10 8 24 6 M258 268 q-10 8 -24 6" stroke="#14080a" stroke-width="2.4" fill="none" opacity="0.7"/>
+  <path d="M196 288 Q205 280 214 288 L211 304 Q205 300 199 304Z" fill="${dk}" stroke="#14100a" stroke-width="2.6"/>
+  <ellipse cx="199" cy="304" rx="3.4" ry="5" fill="#0c0806"/><ellipse cx="211" cy="304" rx="3.4" ry="5" fill="#0c0806"/>
+  <path d="M150 330 Q205 316 260 330 Q262 360 205 368 Q148 360 150 330Z" fill="#1c0a06" stroke="#14100a" stroke-width="4"/>
+  ${grin}
+  <path d="M146 326 q-11 7 -13 18 M264 326 q11 7 13 18" stroke="#14100a" stroke-width="3" fill="none"/>
+  <path d="M180 374 q24 10 50 0" stroke="#14080a" stroke-width="2.6" fill="none" opacity="0.7"/>
+  ${boils(205, 408, 40, 10, 4, dk)}
+  ${drool(160, 360, 30)}${drool(252, 362, 40)}
+  ${boneHand(292, 414, 1.0, 152)}`;
+};
+
+const krasueMonster = (skin) => {
+  const [lo, mid, dk] = skin;
+  let strands = "";
+  for (let i = 0; i < 6; i++) {
+    const y0 = 130 + i * 16;
+    strands += `<path d="M148 ${y0} Q${R(86, 116)} ${y0 + R(40, 90)} ${R(46, 90)} ${y0 + R(130, 200)}" fill="none" stroke="#0c0610" stroke-width="${R(9, 15)}" stroke-linecap="round"/>`;
+    strands += `<path d="M264 ${y0 + 6} Q${R(296, 326)} ${y0 + R(40, 90)} ${R(322, 366)} ${y0 + R(120, 190)}" fill="none" stroke="#0c0610" stroke-width="${R(8, 13)}" stroke-linecap="round"/>`;
+  }
+  let guts = "";
+  for (let i = 0; i < 4; i++) {
+    const x0 = 178 + i * 14, sw = R(10, 14);
+    const d = `M${x0} 384 Q${x0 - R(20, 55)} ${R(404, 426)} ${x0 + R(-26, 10)} ${R(428, 446)} Q${x0 + R(-55, 40)} ${R(450, 462)} ${x0 + R(-40, 34)} ${R(466, 480)}`;
+    guts += `<path d="${d}" fill="none" stroke="#3a0c12" stroke-width="${sw + 5}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="#c75a6e" stroke-width="${sw}" stroke-linecap="round"/>`;
+  }
+  let bowel = "";
+  for (let i = 0; i < 5; i++)
+    bowel += `<circle cx="${R(182, 230)}" cy="${R(360, 384)}" r="${R(9, 15)}" fill="#c75a6e" stroke="#3a0c12" stroke-width="3.5"/>`;
+  return `
+  <ellipse cx="205" cy="210" rx="170" ry="160" fill="url(#aura)"/>
+  <ellipse cx="205" cy="200" rx="120" ry="115" fill="url(#aura)"/>
+  ${strands}
+  <path d="M205 66 Q116 72 100 168 Q94 232 122 290 Q100 252 96 196 Q72 214 60 262 Q60 196 94 148 Q124 80 205 74 Q286 80 316 148 Q350 196 350 262 Q338 214 314 196 Q310 252 288 290 Q316 232 310 168 Q294 72 205 66Z" fill="#0c0610" stroke="#0a0508" stroke-width="3"/>
+  <ellipse cx="205" cy="198" rx="78" ry="90" fill="url(#skin)" stroke="#14100a" stroke-width="5"/>
+  <path d="M128 172 Q142 120 178 106 L172 134 L196 108 L196 136 L222 106 L226 134 L252 110 Q280 130 282 172 Q248 142 205 142 Q162 142 128 172Z" fill="#0c0610"/>
+  <path d="M140 184 Q162 170 186 180 L182 194 Q162 186 146 196Z M270 184 Q248 168 224 178 L228 192 Q248 184 264 194Z" fill="#14080a"/>
+  ${gooEye(168, 204, 19, "#e02020")}${gooEye(242, 204, 19, "#e02020")}
+  <path d="M199 212 L195 240 Q205 248 215 240 L211 212" fill="${mid}" stroke="#14100a" stroke-width="3"/>
+  <path d="M164 258 Q205 242 246 256 Q248 286 205 292 Q162 286 164 258Z" fill="#3a0810" stroke="#14100a" stroke-width="4"/>
+  <path d="M168 258 Q205 250 242 256" stroke="#5a1020" stroke-width="6" fill="none"/>
+  <polygon points="178,260 187,282 195,260" fill="#e8dfb8" stroke="#1a1a1a" stroke-width="2"/>
+  <polygon points="216,259 225,281 233,259" fill="#e8dfb8" stroke="#1a1a1a" stroke-width="2"/>
+  <path d="M240 278 Q250 304 244 326 M245 326 q-3 8 1 14" stroke="#8a0c14" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M170 286 Q160 296 168 308 Q200 320 242 308 Q250 296 240 286 Q205 298 170 286Z" fill="#7a0c14" stroke="#14100a" stroke-width="4"/>
+  <rect x="197" y="306" width="16" height="11" rx="4" fill="#e8e0c8" stroke="#3a2c18" stroke-width="2.5"/>
+  <rect x="198" y="320" width="14" height="10" rx="4" fill="#e8e0c8" stroke="#3a2c18" stroke-width="2.5"/>
+  <path d="M186 310 q-8 18 -2 34 M224 312 q9 16 4 32" fill="none" stroke="#a83040" stroke-width="10" stroke-linecap="round"/>
+  <path d="M205 318 q-30 -4 -34 22 q-2 24 34 38 q36 -14 34 -38 q-4 -26 -34 -22Z" fill="#a81828" stroke="#3a0c12" stroke-width="4"/>
+  <path d="M193 334 q10 -8 22 -2" stroke="#e88a98" stroke-width="3.5" fill="none"/>
+  <path d="M188 322 q-12 -8 -10 -22 M222 322 q12 -8 10 -22" stroke="#7a3040" stroke-width="7" fill="none" stroke-linecap="round"/>
+  ${bowel}
+  ${guts}
+  <circle cx="${R(150, 250)}" cy="${R(444, 474)}" r="3.6" fill="#8a0c14"/>
+  <path d="M256 152 Q280 202 266 262 Q255 282 242 290 Q261 234 252 180Z" fill="url(#hatch)" opacity="0.55"/>
+  <circle cx="248" cy="332" r="2.8" fill="#d8f0a0" opacity="0.9"/><circle cx="140" cy="296" r="2.4" fill="#d8f0a0" opacity="0.85"/><circle cx="282" cy="276" r="2.2" fill="#d8f0a0" opacity="0.75"/><circle cx="122" cy="350" r="2" fill="#d8f0a0" opacity="0.7"/>`;
+};
+
+const monkMonster = (skin) => {
+  let hem = "M100 446 ";
+  for (let x = 100; x <= 286; x += 22) hem += `L${x + 11} ${R(404, 434)} L${x + 22} 446 `;
+  let beads = "";
+  for (let i = 0; i < 9; i++) {
+    const a = Math.PI * (0.18 + i * 0.08);
+    beads += `<circle cx="${205 + Math.cos(a) * 56}" cy="${252 + Math.sin(a) * 30}" r="5" fill="#5a3a1a" stroke="#14100a" stroke-width="2"/>`;
+  }
+  const waiHand = (mir) => `
+  <g transform="translate(205 330) scale(${mir},1)">
+    <path d="M3 6 Q24 0 32 12 L32 50 Q18 58 5 50 Z" fill="#ddd4ae" stroke="#14100a" stroke-width="3.5"/>
+    <path d="M8 8 L7 -30 M16 6 L15 -38 M24 8 L23 -34 M31 12 L30 -22" stroke="#14100a" stroke-width="8.5" stroke-linecap="round" opacity="0.85"/>
+    <path d="M8 8 L7 -30 M16 6 L15 -38 M24 8 L23 -34 M31 12 L30 -22" stroke="#ddd4ae" stroke-width="6" stroke-linecap="round"/>
+    <path d="M7 -14 h5 M15 -20 h5 M23 -16 h5" stroke="#8a7a50" stroke-width="1.8"/>
+  </g>`;
+  const candle = (x, y) => `
+  <ellipse cx="${x}" cy="${y - 26}" rx="22" ry="30" fill="url(#aura)"/>
+  <rect x="${x - 7}" y="${y}" width="14" height="46" rx="4" fill="#ece4cc" stroke="#14100a" stroke-width="3"/>
+  <path d="M${x - 5} ${y} q-3 10 1 18 M${x + 5} ${y + 4} q3 8 0 16" stroke="#c8bc98" stroke-width="2.4" fill="none"/>
+  <ellipse cx="${x}" cy="${y - 13}" rx="8.5" ry="15" fill="#ff9a1a"/>
+  <ellipse cx="${x}" cy="${y - 10}" rx="4" ry="8" fill="#ffe26a"/>
+  <path d="M${x} ${y - 30} q-5 -14 2 -24" stroke="#e8e8e0" stroke-width="2.6" fill="none" opacity="0.5"/>`;
+  return `
+  <ellipse cx="205" cy="230" rx="155" ry="175" fill="url(#aura)"/>
+  <path d="${hem} L286 250 Q294 196 268 168 Q284 162 280 148 Q252 122 205 122 Q158 122 130 148 Q126 162 142 168 Q116 196 124 250 Q118 348 100 446Z" fill="url(#robe)" stroke="#14100a" stroke-width="5"/>
+  <path d="M130 260 Q160 232 204 242 M126 312 Q172 282 232 294 M134 366 Q190 336 252 350 M256 246 Q284 262 292 300 M262 312 Q286 332 288 372" fill="none" stroke="#3a1606" stroke-width="5" opacity="0.85"/>
+  <path d="M148 168 Q196 152 262 168 L258 186 Q200 172 152 186Z" fill="#3a1606" opacity="0.7"/>
+  <ellipse cx="205" cy="184" rx="60" ry="70" fill="url(#bone)" stroke="#14100a" stroke-width="5"/>
+  <path d="M205 120 l-7 18 l9 11 l-6 15 M200 142 l-13 5 M206 156 l13 6 M236 132 l-8 18 l6 12" stroke="#5a4a30" stroke-width="2.8" fill="none"/>
+  <ellipse cx="178" cy="178" rx="17" ry="21" fill="#0a0508"/><ellipse cx="232" cy="178" rx="17" ry="21" fill="#0a0508"/>
+  <circle cx="179" cy="183" r="6.5" fill="#ff3018"><animate attributeName="opacity" values="1;0.35;1" dur="1.6s" repeatCount="indefinite"/></circle>
+  <circle cx="231" cy="183" r="6.5" fill="#ff3018"><animate attributeName="opacity" values="1;0.35;1" dur="1.9s" repeatCount="indefinite"/></circle>
+  <path d="M162 166 q16 -10 32 -2 M216 164 q16 -8 32 2" stroke="#14100a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <polygon points="197,206 205,224 213,206" fill="#0a0508"/>
+  <path d="M166 234 Q205 248 244 234" fill="none" stroke="#0a0508" stroke-width="5.5"/>
+  <path d="M174 230 l1 15 M189 235 l0 15 M205 238 l0 15 M221 235 l0 15 M236 230 l-1 15" stroke="#0a0508" stroke-width="3.8"/>
+  <path d="M168 240 Q150 252 148 268 M242 240 Q260 252 262 268" stroke="#8a7a50" stroke-width="2.4" fill="none"/>
+  ${beads}
+  ${waiHand(1)}${waiHand(-1)}
+  <path d="M260 200 Q286 280 282 380 Q276 420 264 444 Q280 340 254 220Z" fill="url(#hatch)" opacity="0.5"/>
+  <path d="M238 134 Q258 162 256 200 Q248 234 236 244 Q252 196 232 148Z" fill="url(#hatch)" opacity="0.45"/>
+  ${candle(96, 320)}${candle(316, 326)}`;
+};
+
+const snakeMonster = (skin) => {
+  const [lo, mid, dk] = skin;
+  const coil = (d, w) =>
+    `<path d="${d}" fill="none" stroke="#14100a" stroke-width="${w + 8}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="url(#snakeG)" stroke-width="${w}" stroke-linecap="round"/>`;
+  let scales = "";
+  for (let i = 0; i < 34; i++)
+    scales += `<path d="M${R(46, 340)} ${R(338, 462)} q11 -10 22 0" fill="none" stroke="${dk}" stroke-width="3.2" opacity="0.9"/>`;
+  let belly = "";
+  for (let i = 0; i < 8; i++)
+    belly += `<path d="M${56 + i * 34} ${R(434, 452)} q14 8 30 1" fill="none" stroke="${lo}" stroke-width="4" opacity="0.6"/>`;
+  return `
+  <ellipse cx="216" cy="220" rx="160" ry="165" fill="url(#aura)"/>
+  ${coil("M30 468 Q16 386 130 374 Q300 362 312 418 Q318 466 230 470", 48)}
+  ${coil("M370 472 Q392 388 296 356 Q224 336 230 296", 40)}
+  ${coil("M52 392 Q120 350 216 356", 30)}
+  ${scales}${belly}
+  <path d="M230 296 Q222 252 230 226" fill="none" stroke="#14100a" stroke-width="42" stroke-linecap="round"/>
+  <path d="M230 296 Q222 252 230 226" fill="none" stroke="url(#snakeG)" stroke-width="36" stroke-linecap="round"/>
+  <path d="M232 96 Q146 104 148 206 Q148 280 180 318 L196 262 Q178 224 186 162 Q205 134 232 134 Q260 134 278 162 Q286 224 268 262 L284 318 Q316 280 316 206 Q318 104 232 96Z" fill="#0c0610" stroke="#0a0508" stroke-width="3"/>
+  <ellipse cx="232" cy="194" rx="52" ry="62" fill="url(#skin)" stroke="#14100a" stroke-width="5"/>
+  <path d="M186 168 Q198 126 232 122 Q266 126 278 168 Q258 144 232 146 Q206 144 186 168Z M232 122 l-8 16 h16Z" fill="#0c0610"/>
+  <path d="M196 176 Q212 164 228 174 L224 186 Q212 180 202 188Z M268 176 Q252 162 236 172 L240 184 Q252 178 262 186Z" fill="#14080a"/>
+  ${gooEye(212, 196, 14, "#d8a010", true)}${gooEye(254, 196, 14, "#d8a010", true)}
+  <path d="M209 196 l0 9 M251 196 l0 9" stroke="#0a0508" stroke-width="3.4"/>
+  <path d="M226 210 L222 226 Q232 232 242 226 L238 210" fill="${mid}" stroke="#14100a" stroke-width="2.6"/>
+  <path d="M212 240 Q232 230 252 240 Q254 260 232 266 Q210 260 212 240Z" fill="#3a0810" stroke="#14100a" stroke-width="3.5"/>
+  <polygon points="217,241 224,265 231,241" fill="#e8dfb8" stroke="#1a1a1a" stroke-width="2"/>
+  <polygon points="234,240 241,264 248,240" fill="#e8dfb8" stroke="#1a1a1a" stroke-width="2"/>
+  <path d="M232 266 Q228 292 240 308 M240 308 l-10 13 M240 308 l12 11" fill="none" stroke="#d82838" stroke-width="5" stroke-linecap="round"/>
+  <path d="M214 252 q4 14 -2 26" stroke="#8a0c14" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+  ${clawHand(160, 262, 0.68, 24, mid, -1)}
+  ${clawHand(306, 264, 0.68, -24, mid)}
+  <path d="M268 150 Q286 196 278 246 Q270 266 260 274 Q276 224 264 172Z" fill="url(#hatch)" opacity="0.5"/>
+  <path d="M60 442 Q160 470 280 458 L276 472 Q160 484 64 458Z" fill="url(#hatch)" opacity="0.45"/>`;
+};
+
+const MONSTERS = { ghoul: ghoulMonster, krasue: krasueMonster, monk: monkMonster, snake: snakeMonster };
+
+// テーマからの推定（AIが指定しなかった場合の保険）
+function inferScene(theme = "") {
+  const t = theme;
+  let monster =
+    /クラスー|krasue|生首|首/i.test(t) ? "krasue" :
+    /蛇|ナーギ|ヘビ|snake/i.test(t) ? "snake" :
+    /僧|坊|骸骨|スケルトン|monk/i.test(t) ? "monk" : pick(["ghoul", "krasue", "monk"]);
+  let setting =
+    /沼|運河|川|水|swamp/i.test(t) ? "swamp" :
+    /墓|grave/i.test(t) ? "graveyard" :
+    /寺|temple|僧/i.test(t) ? "temple" :
+    /村|家|屋|village/i.test(t) ? "village" : pick(["jungle", "graveyard", "village", "swamp"]);
+  return { monster, setting };
+}
+
+// --- 骨の手（長い指骨・関節・鉤爪） ---
+const boneHand = (x, y, sc, rot) => {
+  let fingers = "";
+  for (let i = 0; i < 4; i++) {
+    const a = -34 + i * 22, L = R(48, 64);
+    fingers += `<g transform="rotate(${a})"><path d="M0 0 L${L} 0" stroke="#14100a" stroke-width="12" stroke-linecap="round"/><path d="M0 0 L${L} 0" stroke="#e4dab4" stroke-width="8.5" stroke-linecap="round"/><circle cx="${L * 0.45}" cy="0" r="4.6" fill="#e4dab4" stroke="#14100a" stroke-width="2"/><path d="M${L} 0 q15 -3 21 7 q-10 7 -21 2Z" fill="#cfc294" stroke="#14100a" stroke-width="2.4"/></g>`;
+  }
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})"><ellipse cx="-8" cy="0" rx="20" ry="25" fill="#e4dab4" stroke="#14100a" stroke-width="4"/><path d="M-20 -10 q8 10 22 8 M-22 4 q10 8 24 4" stroke="#8a7a50" stroke-width="2" fill="none"/>${fingers}</g>`;
+};
+
+function buildLocalSvg(scene = {}) {
+  const sc = SCENES[pick(Object.keys(SCENES))];
+  const skin = pick(SKINS);
+  const monsterKey = MONSTERS[scene.monster] ? scene.monster : inferScene().monster;
+  const settingKey = ["jungle", "graveyard", "temple", "swamp", "village"].includes(scene.setting)
+    ? scene.setting : "jungle";
+  const seed = RI(1, 999);
+  const moonX = pick([96, 304]), moonR = R(52, 70);
+  const auraColor = monsterKey === "krasue" ? "#b8e84a" : monsterKey === "monk" ? "#ff8a2a" : "#e84a4a";
+
+  return `<svg viewBox="0 0 400 480" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${sc.sky[0]}"/><stop offset="0.55" stop-color="${sc.sky[1]}"/><stop offset="1" stop-color="${sc.sky[2]}"/>
+    </linearGradient>
+    <radialGradient id="moonG"><stop offset="0.2" stop-color="#fffbe8"/><stop offset="1" stop-color="${sc.moon}"/></radialGradient>
+    <radialGradient id="skin" cx="0.42" cy="0.32">
+      <stop offset="0" stop-color="${skin[0]}"/><stop offset="0.6" stop-color="${skin[1]}"/><stop offset="1" stop-color="${skin[2]}"/>
+    </radialGradient>
+    <radialGradient id="aura"><stop offset="0.4" stop-color="${auraColor}" stop-opacity="0.4"/><stop offset="1" stop-color="${auraColor}" stop-opacity="0"/></radialGradient>
+    <radialGradient id="eyeGlow"><stop offset="0.25" stop-color="#fffbe0"/><stop offset="1" stop-color="#c8e060"/></radialGradient>
+    <linearGradient id="robe" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#b86a1a"/><stop offset="0.6" stop-color="#7a3c0c"/><stop offset="1" stop-color="#3a1a06"/>
+    </linearGradient>
+    <radialGradient id="bone" cx="0.4" cy="0.3"><stop offset="0" stop-color="#f4eed4"/><stop offset="1" stop-color="#b8a878"/></radialGradient>
+    <linearGradient id="snakeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${skin[0]}"/><stop offset="1" stop-color="${skin[2]}"/></linearGradient>
+    <radialGradient id="vig"><stop offset="0.62" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.5"/></radialGradient>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+      <path d="M0 0 L0 7" stroke="#140a06" stroke-width="1.8"/>
+    </pattern>
+    <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(18)">
+      <circle cx="3" cy="3" r="1.15" fill="#1a0a08"/>
+    </pattern>
+    <pattern id="xhatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
+      <path d="M0 0 L0 8 M0 4 L8 4" stroke="#140a06" stroke-width="1.5"/>
+    </pattern>
+    <pattern id="pebble" width="15" height="13" patternUnits="userSpaceOnUse">
+      <circle cx="3.6" cy="3.6" r="3" fill="${skin[2]}"/><circle cx="2.7" cy="2.7" r="1.05" fill="${skin[0]}"/>
+      <circle cx="10.6" cy="8.6" r="3.4" fill="${skin[2]}"/><circle cx="9.5" cy="7.5" r="1.2" fill="${skin[0]}"/>
+    </pattern>
+    <filter id="ink" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.013 0.019" numOctaves="2" seed="${seed}" result="n1"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.06 0.07" numOctaves="2" seed="${seed + 7}" result="n2"/>
+      <feDisplacementMap in="SourceGraphic" in2="n1" scale="8" result="d1"/>
+      <feDisplacementMap in="SourceGraphic" in2="n2" scale="5" result="d2r"/>
+      <feColorMatrix in="d2r" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.4 0" result="d2"/>
+      <feMerge><feMergeNode in="d2"/><feMergeNode in="d1"/></feMerge>
+    </filter>
+    <filter id="blotch">
+      <feTurbulence type="fractalNoise" baseFrequency="0.016 0.02" numOctaves="3" seed="${seed + 13}"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.7 0.7 0.7 0 -0.85"/>
+    </filter>
+  </defs>
+  <rect width="400" height="480" fill="url(#sky)"/>
+  <g filter="url(#ink)">
+    <circle cx="${moonX}" cy="106" r="${moonR}" fill="url(#moonG)"/>
+    <ellipse cx="${moonX - 12}" cy="92" rx="${moonR * 0.18}" ry="${moonR * 0.12}" fill="${sc.sky[1]}" opacity="0.3"/>
+    <ellipse cx="${moonX + 16}" cy="118" rx="${moonR * 0.13}" ry="${moonR * 0.1}" fill="${sc.sky[1]}" opacity="0.25"/>
+    <ellipse cx="${moonX + R(-30, 30)}" cy="${R(84, 124)}" rx="${R(50, 80)}" ry="${R(7, 12)}" fill="${sc.sky[2]}" opacity="0.8"/>
+    ${bats(RI(3, 6))}
+    <path d="M0 0 L150 0 Q70 40 0 120Z" fill="url(#xhatch)" opacity="0.35"/>
+    <path d="M400 0 L250 0 Q330 40 400 120Z" fill="url(#xhatch)" opacity="0.35"/>
+    <path d="M0 480 L0 396 Q100 ${R(372, 388)} 200 392 Q300 ${R(376, 392)} 400 388 L400 480Z" fill="${sc.ground}"/>
+    <path d="M0 480 L0 436 Q200 462 400 440 L400 480Z" fill="url(#hatch)" opacity="0.3"/>
+    ${settingLayer(settingKey, sc)}
+    ${MONSTERS[monsterKey](skin)}
+    ${victim(96, 412, 1.0)}
+    ${monsterKey !== "snake" ? victim(330, 452, 0.7) : ""}
+    ${settingKey === "swamp" || monsterKey === "monk" ? mist() : ""}
+    ${bloodDrips()}
+  </g>
+  <rect width="400" height="480" fill="url(#dots)" opacity="0.07"/>
+  <rect width="400" height="480" filter="url(#blotch)" opacity="0.15"/>
+  <rect width="400" height="480" fill="url(#vig)"/>
+</svg>`;
+}
+
+// ---- 完全ローカルの本文生成（API不通でも必ず動く最終手段） ----
+const TH_WORDS = [
+  { thai: "ผี", jp: "幽霊" },
+  { thai: "ปีศาจ", jp: "悪魔" },
+  { thai: "วิญญาณ", jp: "魂" },
+  { thai: "กระสือ", jp: "クラスー" },
+  { thai: "ป่าช้า", jp: "墓場" },
+  { thai: "คืนหลอน", jp: "戦慄の夜" },
+  { thai: "สาปสยอง", jp: "恐怖の呪い" },
+  { thai: "กินคน", jp: "人食い" },
+  { thai: "บ้านร้าง", jp: "廃屋" },
+  { thai: "คลองมรณะ", jp: "死の運河" },
+];
+const TH_PUBLISHERS = ["การ์ตูนผีไทย", "สำนักพิมพ์สยองขวัญ", "นครผี การ์ตูน"];
+const TH_BUBBLES = [
+  { thai: "ช่วยด้วย! ผีมา!", jp: "助けて！お化けが来た！" },
+  { thai: "อย่ามานะ!!", jp: "来るなー！！" },
+  { thai: "มันยังไม่ตาย!", jp: "アイツはまだ死んでいない！" },
+];
+function buildLocalMeta(theme) {
+  const w = () => pick(TH_WORDS);
+  const a = w(), b = w(), c = w(), d = w();
+  const bub = pick(TH_BUBBLES);
+  return {
+    titleThai: a.thai + b.thai,
+    titleJp: `${b.jp}の${a.jp}`,
+    topBannerThai: "เรื่องผีสุดสยอง!",
+    speechBubbleThai: bub.thai,
+    speechBubbleJp: bub.jp,
+    priceBaht: pick([1, 5]),
+    publisherThai: pick(TH_PUBLISHERS),
+    stories: [
+      { thai: c.thai + a.thai, jp: `${a.jp}と${c.jp}` },
+      { thai: d.thai + b.thai, jp: `${b.jp}の${d.jp}` },
+      { thai: a.thai + d.thai, jp: `${d.jp}に潜む${a.jp}` },
+    ],
+    blurbJp: `「${theme}」——その名を口にした者は、もう逃げられない。村人が一人また一人と消えていく夜、少年は見てしまった。これは1980年代バンコクの路地裏で1バーツで売られた、本当にあったかもしれない物語。`,
+    _local: true,
+  };
+}
+
+
+
+</script>
+
+<script>
+// ================= 屋台UI =================
+const COVER_W = 250, COVER_H = 472;
+
+const EXTRA_THEMES = [
+  "夜行列車の検札にくる僧",
+  "バナナ畑の女の霊",
+  "雨季にだけ現れる首屋台",
+  "运河の水死人市場",
+  "守護霊を怒らせた一家",
+];
+const ALL_THEMES = THEMES.concat(EXTRA_THEMES);
+
+function makeComic(theme) {
+  const meta = buildLocalMeta(theme);
+  const scene = inferScene(theme);
+  return { ...meta, theme, palette: pick(PALETTES), svg: buildLocalSvg(scene) };
+}
+
+function coverHTML(c) {
+  const p = c.palette;
+  return `<div class="cover" data-id="${c.id}">
+    <div class="bands thai">
+      <span style="background:${p.band1}">รวมนิยายภาพ</span>
+      <span style="background:${p.band2}">เล่มเดียวจบ</span>
+      <span style="background:${p.band3}">หลายเรื่องหลายรส</span>
+    </div>
+    <div class="cBanner thai">${c.topBannerThai}</div>
+    <div class="cHead">
+      <div class="cPub thai"><span class="star">★</span>${c.publisherThai}</div>
+      <div class="cTtl thai">${c.titleThai}</div>
+      <div class="cTtlJp">${c.titleJp}</div>
+    </div>
+    <div class="cArt">
+      ${c.svg}
+      <div class="cBubble thai">${c.speechBubbleThai}</div>
+      <div class="cPrice"><b>${c.priceBaht}</b><small class="thai">บาท</small></div>
+    </div>
+  </div>`;
+}
+
+function backHTML(c) {
+  const stories = c.stories.map(s =>
+    `<div class="cbStory"><div class="th thai">${s.thai}</div><div class="jp">${s.jp}</div></div>`).join("");
+  return `<div class="coverBack">
+    <div class="cbFrame">
+      <div class="cbTitle">収 録 作 品</div>
+      <div class="cbOrn">❦ ❦ ❦</div>
+      ${stories}
+      <div class="cbBlurb">${c.blurbJp}</div>
+      <div class="cbNote">表紙のセリフ:「${c.speechBubbleJp}」／ ローカル印刷所版・本日限り</div>
+    </div>
+    <div class="teeBtn hand">👕 この一冊をTシャツにする（準備中）</div>
+  </div>`;
+}
+
+function scaled(html, scale) {
+  return `<div class="scl" style="width:${COVER_W * scale}px;height:${COVER_H * scale}px">
+    <div style="transform:scale(${scale});transform-origin:0 0">${html}</div></div>`;
+}
+
+// ---- 状態 ----
+const LIB = new Map();
+let seq = 0;
+function register(c) { c.id = "c" + (++seq); LIB.set(c.id, c); return c; }
+
+// ---- レール（吊りクリップ） ----
+const railInner = document.getElementById("railInner");
+for (let i = 0; i < 7; i++) {
+  const c = register(makeComic(pick(ALL_THEMES)));
+  const d = document.createElement("div");
+  d.className = "hang";
+  d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.42);
+  railInner.appendChild(d);
+}
+
+// ---- 棚（ワイヤーラック） ----
+const pockets = document.getElementById("pockets");
+function addToRack(c, prepend = false) {
+  const d = document.createElement("div");
+  d.className = "pocket";
+  d.innerHTML = scaled(coverHTML(c), 0.56);
+  if (prepend && pockets.firstChild) pockets.insertBefore(d, pockets.firstChild);
+  else pockets.appendChild(d);
+}
+for (let i = 0; i < 12; i++) addToRack(register(makeComic(pick(ALL_THEMES))));
+
+// ---- チップ ----
+const chips = document.getElementById("chips");
+THEMES.forEach(t => {
+  const b = document.createElement("button");
+  b.className = "chip"; b.textContent = t;
+  b.onclick = () => { document.getElementById("themeInput").value = t; summon(t); };
+  chips.appendChild(b);
+});
+
+// ---- 召喚 ----
+const stage = document.getElementById("summonStage");
+const loadingNote = document.getElementById("loadingNote");
+const btn = document.getElementById("summonBtn");
+function summon(t) {
+  const theme = (t || document.getElementById("themeInput").value || pick(ALL_THEMES)).trim() || pick(ALL_THEMES);
+  btn.disabled = true; stage.innerHTML = ""; loadingNote.style.display = "block";
+  setTimeout(() => {
+    const c = register(makeComic(theme));
+    loadingNote.style.display = "none";
+    stage.innerHTML = scaled(coverHTML(c), 1) + scaled(backHTML(c), 1);
+    addToRack(c, true);
+    btn.disabled = false;
+    if (stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, 700 + Math.random() * 600);
+}
+btn.onclick = () => summon();
+document.getElementById("themeInput").addEventListener("keydown", e => { if (e.key === "Enter") summon(); });
+
+// ---- モーダル ----
+const modal = document.getElementById("modal");
+const modalInner = document.getElementById("modalInner");
+document.addEventListener("click", e => {
+  const cv = e.target.closest(".cover");
+  if (cv && !e.target.closest("#summonStage")) {
+    const c = LIB.get(cv.dataset.id);
+    if (!c) return;
+    modalInner.innerHTML = scaled(coverHTML(c), 1.1) + scaled(backHTML(c), 1.1);
+    modal.classList.add("open");
+  }
+});
+document.getElementById("modalClose").onclick = () => modal.classList.remove("open");
+modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+
+// ---- 平積み ----
+const pile = document.getElementById("pile");
+for (let i = 0; i < 5; i++) {
+  const b = document.createElement("div");
+  b.className = "bundle";
+  b.style.bottom = (i * 24) + "px";
+  b.style.left = (10 + Math.sin(i * 2.1) * 14) + "px";
+  b.style.transform = `rotate(${(Math.random() * 4 - 2).toFixed(1)}deg)`;
+  pile.appendChild(b);
+}
+
+// ---- シーン遷移（店頭 ⇄ ラック） ----
+const sceneStreet = document.getElementById("sceneStreet");
+const sceneRack = document.getElementById("sceneRack");
+const streetImg = document.getElementById("streetImg");
+
+function showRack(instant) {
+  sceneRack.classList.add("show");
+  requestAnimationFrame(() => requestAnimationFrame(() => sceneRack.classList.add("vis")));
+  if (instant) {
+    sceneStreet.style.cssText = "opacity:0;visibility:hidden;pointer-events:none";
+    return;
+  }
+  sceneStreet.style.pointerEvents = "none";
+  sceneStreet.classList.add("zooming");
+  setTimeout(() => {
+    sceneStreet.style.transition = "opacity .5s ease";
+    sceneStreet.style.opacity = "0";
+  }, 600);
+  setTimeout(() => {
+    sceneStreet.style.visibility = "hidden";
+    sceneStreet.classList.remove("zooming");
+  }, 1250);
+}
+function showStreet() {
+  window.scrollTo({ top: 0 });
+  sceneStreet.style.transition = "opacity .45s ease";
+  sceneStreet.style.visibility = "visible";
+  sceneStreet.style.pointerEvents = "auto";
+  requestAnimationFrame(() => { sceneStreet.style.opacity = "1"; });
+  sceneRack.classList.remove("vis");
+  setTimeout(() => sceneRack.classList.remove("show"), 700);
+}
+document.getElementById("hotspot").onclick = () => showRack(false);
+document.getElementById("backTag").onclick = showStreet;
+// 店頭写真が無い場合は直接ラックへ
+streetImg.addEventListener("error", () => showRack(true));
+
+// ---- ステッカー帯 ----
+const STK = [
+  ["ผีTODAY", "#1a5aa8"], ["มาแล้ว!", "#c1121f"], ["TIME ผี", "#d62828"],
+  ["NEWS สยอง", "#1a8a3c"], ["1 บาท", "#b8860b"], ["REVIEW ผี", "#7a2a8a"],
+  ["หลอนWEEKLY", "#0a6a6a"], ["IT'S HERE", "#2a3a8a"],
+];
+const stickers = document.getElementById("stickers");
+STK.forEach(([t, col], i) => {
+  const s = document.createElement("span");
+  s.className = "stk thai"; s.textContent = t; s.style.background = col;
+  s.style.transform = `rotate(${(i % 2 ? 1 : -1) * (Math.random() * 3 + 0.5).toFixed(1)}deg)`;
+  stickers.appendChild(s);
+});
+</script>
+</body>
+</html>
