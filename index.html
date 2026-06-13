@@ -854,10 +854,66 @@ const TITLE_STYLES = [
   { f:"'Noto Sans Thai',sans-serif", c:"#e8202e", s:"1.5px 1.5px 0 #f4c20d,3px 3px 0 #7a1020,-1px -1px 0 #f4c20d", w:900 },
 ];
 
-function buildLocalMeta(theme) {
+// ===== 裏表紙のあらすじ／収録作品（それっぽく・二系統） =====
+const BLURB_TAIL = [
+  "1980年代バンコクの路地裏で1バーツで売られ、読み捨てられた一冊。",
+  "屋台や床屋でひと月に何十万部と売られては消えた、あの怪奇漫画。",
+  "1バーツの読み捨て漫画——だが読んだ者の背に、今も冷たい指がふれるという。",
+  "本当にあったかもしれない物語。ページを閉じても、その声は耳を離れない。",
+  "色あせた表紙の奥に封じられた、誰も覚えていない怪談。",
+];
+// ピー（怪奇）系
+const BL_PLACE = ["死の運河のほとり", "打ち捨てられた一軒家", "月のない墓場", "雨季の村はずれ", "古寺の裏手", "夜の水上市場", "高床式の家の床下"];
+const BL_GHOST = ["首から下を失った女の生首クラスー", "無念のうちに死んだ女の怨霊", "腹を空かせた亡者ピーポップ", "棺から這い出す花嫁の死体", "両眼を失った僧の亡霊", "半人半蛇の大蛇の精"];
+const BL_VICTIM = ["村人たち", "若い夫婦", "夜道を急ぐ者", "欲に目がくらんだ男", "秘密を知ってしまった娘", "余所から来た一家"];
+// 愛憎（人間関係）系
+const AI_WOMAN = ["美しい踊り子", "村いちばんの娘", "薄幸の人妻", "裕福な家の令嬢", "身寄りのない女"];
+const AI_MAN = ["羽振りのいい商人", "幼なじみの青年", "妻ある男", "流れ者の色男", "村の有力者の息子"];
+const AI_OTHER = ["金に目がない愛人", "嫉妬に狂う元恋人", "腹違いの妹", "街いちばんの美女", "夫の隠し子の母"];
+const EP_JP = [
+  "帰らずの渡し", "呪われた婚礼", "夜ごと泣く女", "血ぬられた仏間", "消えた許嫁",
+  "笑う古井戸", "雨夜の人影", "裏切りの代償", "彼岸からの便り", "三度鳴る鈴",
+  "嫉妬の沼", "二号さんの執念", "形見の指輪", "床下の声", "母の遺言",
+];
+function pick3(arr) {
+  const a = arr.slice(); const out = [];
+  for (let i = 0; i < 3 && a.length; i++) out.push(a.splice(Math.floor(Math.random() * a.length), 1)[0]);
+  return out;
+}
+function buildBlurb(style) {
+  const tail = pick(BLURB_TAIL);
+  if (style === "aizo") {
+    const w = pick(AI_WOMAN), m = pick(AI_MAN), o = pick(AI_OTHER);
+    return pick([
+      `${w}は${m}に身も心も捧げた。だがその裏で、${m}は${o}と通じていた——。裏切りを知った女の涙は、やがて消えぬ呪いへと変わる。愛と嫉妬、そして復讐。もつれた糸の先に待つ結末とは。${tail}`,
+      `愛憎は紙一重。${w}と${o}、二人の女のあいだで揺れる${m}。甘い関係は、一夜の惨劇へと転がり落ちていく——。${tail}`,
+      `「あなただけは信じていたのに」。${w}の慟哭が夜に響く。${m}の心変わり、${o}の奸計、もつれにもつれた男と女の業——逃れられぬ因果の物語。${tail}`,
+      `身分違いの恋、許されぬ仲。${w}と${m}を引き裂いたのは、${o}の一通の手紙だった。やがて愛は憎しみに、憎しみは血に染まる。${tail}`,
+    ]);
+  }
+  const p = pick(BL_PLACE), g = pick(BL_GHOST), v = pick(BL_VICTIM);
+  return pick([
+    `${p}に、${g}が現れるという。${v}は一人、また一人と姿を消し、残された者を待つのは底なしの恐怖——。古い因縁がほどけるとき、生者と死者の境は崩れ落ちる。${tail}`,
+    `その名を、口にしてはならない。${p}にまつわる${g}の言い伝え。${v}が次々と狂い、倒れていく。誰も信じなかった——あの夜、扉を開けるまでは。${tail}`,
+    `${g}。${p}で起きた怪異は、やがて${v}を呑み込んでいく。逃げ場はない。これは祟りか、それとも報いか。${tail}`,
+    `満月の晩にだけ、${p}に灯がともる。${g}に魅入られた${v}は、もう戻れない。生きて朝を迎えられるのは誰か。${tail}`,
+  ]);
+}
+function buildStories(a, b, c, d) {
+  // タイ語は単語の組み合わせ（実物の雰囲気）、和文は煽り風のサブタイトル
+  const eps = pick3(EP_JP);
+  return [
+    { thai: c.thai + a.thai, jp: `第一話「${eps[0]}」` },
+    { thai: d.thai + b.thai, jp: `第二話「${eps[1]}」` },
+    { thai: a.thai + d.thai, jp: `第三話「${eps[2]}」` },
+  ];
+}
+
+function buildLocalMeta(theme, style) {
   const w = () => pick(TH_WORDS);
   const a = w(), b = w(), c = w(), d = w();
   const bub = pick(TH_BUBBLES);
+  const st = style || (Math.random() < 0.45 ? "aizo" : "phi");
   return {
     titleThai: a.thai + b.thai,
     titleJp: `${b.jp}の${a.jp}`,
@@ -871,12 +927,9 @@ function buildLocalMeta(theme) {
     speechBubbleJp: bub.jp,
     priceBaht: pick([1, 5]),
     publisherThai: pick(TH_PUBLISHERS),
-    stories: [
-      { thai: c.thai + a.thai, jp: `${a.jp}と${c.jp}` },
-      { thai: d.thai + b.thai, jp: `${b.jp}の${d.jp}` },
-      { thai: a.thai + d.thai, jp: `${d.jp}に潜む${a.jp}` },
-    ],
-    blurbJp: `「${theme}」——その名を口にした者は、もう逃げられない。村人が一人また一人と消えていく夜、少年は見てしまった。これは1980年代バンコクの路地裏で1バーツで売られた、本当にあったかもしれない物語。`,
+    blurbStyle: st,
+    stories: buildStories(a, b, c, d),
+    blurbJp: buildBlurb(st),
     _local: true,
   };
 }
@@ -1045,6 +1098,12 @@ async function makeComic(theme) {
   const scene = inferScene(theme);
   const base = { ...meta, theme, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null };
   const art = buildImagePrompt(meta, scene, theme);  // 構図・怪異・舞台などをランダム化した完成プロンプト
+  // 表紙の系統（愛憎/ピー）に裏表紙のあらすじ・収録作品を合わせる
+  base.blurbStyle = art.style;
+  base.blurbJp = buildBlurb(art.style);
+  base.stories = (function () {
+    const w = () => pick(TH_WORDS); return buildStories(w(), w(), w(), w());
+  })();
 
   // Gemini画像生成を試みる
   try {
