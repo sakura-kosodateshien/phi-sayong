@@ -907,9 +907,10 @@ const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/ge
    ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
 // 共通の地（画材・古紙・文字なし・下手さ）。愛憎/ピーの両スタイルで共有。
 const BASE_STYLE =
-  "Authentic 1980s Thai 1-baht pulp comic cover (การ์ตูนเล่มละบาท), hand-painted in LAYERED WATERCOLOUR AND GOUACHE — clearly VISIBLE BRUSH STROKES, glazed built-up washes, and an ODD, slightly-wrong amateur sense of volume and shading (modelled, not flat, but the volume comes out a bit strange). " +
-  "Lurid garish palette, uneven hand-inked outlines, halftone dots, off-register cheap newsprint printing on browned, sun-faded, stained paper with foxing spots, water marks, creases and frayed torn dog-eared worn edges and damaged corners on all four sides. " +
-  "Drawn by a SELF-TAUGHT, genuinely UNSKILLED provincial artist — the human faces must NOT be neat or well-proportioned: they are clearly AWKWARD, lopsided and a little WRONG, with off-balance, mismatched features (this clumsy 'heta-uma' amateurism is ESSENTIAL), yet still meant as attractive people. NOT polished, NOT professional, NOT clean digital art, NOT 3D render, NOT cartoon/anime/chibi. " +
+  "Authentic 1980s Thai 1-baht pulp comic cover (การ์ตูนเล่มละบาท), hand-painted in THIN, LIGHT WATERCOLOUR AND GOUACHE — clearly VISIBLE BRUSH STROKES and lightly layered watery washes (light and watery, NOT heavy, NOT dense, NOT dark), with an ODD, slightly-wrong amateur sense of volume and shading. " +
+  "COLOUR: surprisingly BRIGHT and LIGHT — a cheerful, almost random jumble of MANY different clashing bright hues used oddly together (bright pink, sky blue, light green, yellow, orange, lavender, turquoise), like cheap bright 4-colour newsprint. Do NOT make it dark, moody, muddy, grey or desaturated; keep it BRIGHT and colourful. " +
+  "Uneven hand-inked outlines, halftone dots, off-register cheap newsprint printing on browned, sun-faded, stained paper with foxing spots, water marks, creases and frayed torn dog-eared worn edges and damaged corners on all four sides. " +
+  "Drawn by a SELF-TAUGHT, genuinely UNSKILLED provincial artist — the human faces must NOT be neat or well-proportioned: they are clearly AWKWARD, lopsided and a little WRONG, with off-balance mismatched features and slightly odd hair (this clumsy heta-uma amateurism is ESSENTIAL), yet still meant as attractive people. EACH person has a DIFFERENT individual face and DIFFERENT eyes — never repeat the same eyes or the same face across the characters. NOT polished, NOT professional, NOT clean digital art, NOT 3D render, NOT cartoon/anime/chibi. " +
   "Poster-like frontal composition, figures large and filling the frame, background only a minimal backdrop. " +
   "Absolutely NO text, lettering, title, numbers, price or speech bubbles anywhere; keep the top area and the bottom-right corner a little clearer for a title and price added later.";
 // 愛憎スタイル（人間関係のもつれ・ドロドロ）
@@ -989,14 +990,12 @@ const PLOTS = [
   "a quiet village family suddenly confronted by a hungry spirit in the night",
 ];
 const LIGHTS = [
-  "harsh full-moon light", "the orange glow of a single candle",
-  "a stark lightning flash in a thunderstorm", "cold blue pre-dawn fog",
-  "flickering night-market neon", "one narrow flashlight beam in pitch dark",
-  "a blood-red dusk sky",
+  "bright flat even daylight", "warm bright afternoon sun", "a bright colourful moonlit night (still light, not dark)",
+  "bright theatrical key lighting", "an oddly evenly-lit bright scene", "warm bright lamplight",
 ];
 const MOODS = [
-  "sickly green miasma tones", "bruised purple shadows", "lurid blood-red palette",
-  "cold blue moonlit palette", "jaundiced yellow lamplight", "decayed sepia tones",
+  "a bright clashing multicolour palette", "cheerful pastel pinks and blues", "vivid bright primary colours oddly mixed",
+  "bright turquoise, pink and yellow", "sunny light greens and oranges", "light, airy, colourful tones",
 ];
 function biasPick(theme, table, map) {
   for (const [re, i] of map) if (re.test(theme)) return table[i];
@@ -1034,8 +1033,8 @@ function buildImagePrompt(meta, scene, theme = "") {
   const prompt =
     `${BASE_STYLE} STYLE = THAI 'PHI' GHOST-HORROR cover: ${composition}. ` +
     `The monstrous ghost is ${monster} — grotesque and rotting with dead or glowing eyes; it is the ONLY monstrous figure. ` +
-    `In front of it, ordinary frightened humans with normal human eyes (NOT skeletal, NOT corpse-like): ${cast}. ` +
-    `Eerie, lurid and a little gory; the ghost's eyes and the humans' eyes look completely different. ` +
+    `In front of it, ordinary frightened humans with normal human eyes (NOT skeletal, NOT corpse-like): ${cast}; each frightened person has a clearly DIFFERENT face and DIFFERENT eyes. ` +
+    `Eerie and a little gory, but BRIGHTLY and colourfully painted (NOT dark); the ghost's eyes and the humans' eyes look completely different. ` +
     `Lit by ${light}, ${mood}. A bare flat hint of setting (${setting}). Variation seed ${seed}.`;
   return { prompt, seed, style, monster, setting };
 }
