@@ -941,6 +941,7 @@ function buildImagePrompt(meta, scene, theme = "") {
     `${ART_STYLE}. ${composition}. The creature is ${monster}. ` +
     `Scene: ${setting}, lit by ${light}, dominated by ${mood}. Also present: ${cast}. ` +
     `Use a highly varied, original composition — do NOT default to a monk plus a stilt house. ` +
+    `No embedded text, lettering, title, or speech bubbles inside the artwork itself. ` +
     `Keep the top-left and bottom-right corners relatively uncluttered for an overlaid speech bubble and price tag. ` +
     `Variation seed ${seed}.`;
   return { prompt, seed, monster, setting };
