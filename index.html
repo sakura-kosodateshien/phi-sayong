@@ -6,7 +6,7 @@
 <title>สำนักพิมพ์ผีสยอง BOOKS STORE｜タイ・バーツ怪奇漫画の屋台</title>
 <meta name="description" content="1980年代バンコクの路地裏で1バーツで売られていた怪奇漫画を、悪霊AIと自家印刷所が召喚する架空の漫画屋台。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@500;700;900&family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@500;700;900&family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700;900&family=Chonburi&family=Pattaya&family=Charmonman:wght@400;700&family=Sriracha&family=Charm:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#1a1208; --paper:#f0e6c8; --paper2:#e8dcb4;
@@ -118,6 +118,12 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
   text-shadow:1.5px 1.5px 0 var(--yel), 3px 3px 0 #7a1020, -1px -1px 0 var(--yel);
   transform:scaleY(1.12);letter-spacing:-.01em;word-break:break-all}
 .cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
+/* タイトルを絵の上に大きく重ねるモード（バーツコミックの手描き見出し風） */
+.cTtlArt{position:absolute;left:8px;right:8px;top:7px;z-index:4;text-align:center;
+  font-size:33px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.9))}
+.cover.titleArt .cHead{min-height:50px;padding:6px 2px 2px}
+.cover.titleArt .cBubble{top:auto;bottom:15%}
 .cArt{position:relative;margin-top:5px;border:2.5px solid #2a1c08;background:#000;line-height:0}
 .cArt svg{width:100%;height:auto;display:block}
 .cBubble{position:absolute;left:7px;top:7px;background:#fffbe8;border:2.5px solid var(--ink);border-radius:50%;
@@ -807,6 +813,18 @@ const TH_BUBBLES = [
   { thai: "อย่ามานะ!!", jp: "来るなー！！" },
   { thai: "มันยังไม่ตาย!", jp: "アイツはまだ死んでいない！" },
 ];
+// タイトル文字のバリエーション（書体・色・縁取り）。バーツコミックの手描き見出し感を再現。
+const TITLE_STYLES = [
+  { f:"'Chonburi',cursive",          c:"#e8202e", s:"2px 2px 0 #f4c20d,4px 4px 0 #7a1020,-1px -1px 0 #fff",         w:400 },
+  { f:"'Pattaya',sans-serif",        c:"#f4c20d", s:"2px 2px 0 #111,-1px -1px 0 #d62828,0 0 3px #000",             w:400 },
+  { f:"'Charmonman',cursive",        c:"#ffffff", s:"0 0 5px #d62828,2px 2px 0 #000,-1px -1px 0 #000",             w:700 },
+  { f:"'Sriracha',cursive",          c:"#ffe24a", s:"2px 2px 0 #b01020,3px 3px 0 #000",                            w:400 },
+  { f:"'Chonburi',cursive",          c:"#1a8a3c", s:"2px 2px 0 #ffe24a,-1px -1px 0 #000,3px 3px 0 #06351a",        w:400 },
+  { f:"'Pattaya',sans-serif",        c:"#ffffff", s:"2px 2px 0 #d62828,4px 4px 0 #000",                           w:400 },
+  { f:"'Charm',cursive",             c:"#ff7a1a", s:"2px 2px 0 #2a0a00,-1px -1px 0 #ffe24a,0 0 4px #000",          w:700 },
+  { f:"'Noto Sans Thai',sans-serif", c:"#e8202e", s:"1.5px 1.5px 0 #f4c20d,3px 3px 0 #7a1020,-1px -1px 0 #f4c20d", w:900 },
+];
+
 function buildLocalMeta(theme) {
   const w = () => pick(TH_WORDS);
   const a = w(), b = w(), c = w(), d = w();
@@ -814,6 +832,8 @@ function buildLocalMeta(theme) {
   return {
     titleThai: a.thai + b.thai,
     titleJp: `${b.jp}の${a.jp}`,
+    titleStyle: pick(TITLE_STYLES),
+    titleInArt: Math.random() < 0.4,
     topBannerThai: "เรื่องผีสุดสยอง!",
     speechBubbleThai: bub.thai,
     speechBubbleJp: bub.jp,
@@ -984,7 +1004,12 @@ async function makeComic(theme) {
 
 function coverHTML(c) {
   const p = c.palette;
-  return `<div class="cover" data-id="${c.id}">
+  const ts = c.titleStyle || TITLE_STYLES[0];
+  const tStyle = `font-family:${ts.f};color:${ts.c};text-shadow:${ts.s};font-weight:${ts.w || 900}`;
+  const inArt = !!c.titleInArt;
+  const headTitle = inArt ? "" : `<div class="cTtl thai" style="${tStyle}">${c.titleThai}</div>`;
+  const artTitle  = inArt ? `<div class="cTtlArt thai" style="${tStyle}">${c.titleThai}</div>` : "";
+  return `<div class="cover${inArt ? " titleArt" : ""}" data-id="${c.id}">
     <div class="bands thai">
       <span style="background:${p.band1}">รวมนิยายภาพ</span>
       <span style="background:${p.band2}">เล่มเดียวจบ</span>
@@ -993,11 +1018,12 @@ function coverHTML(c) {
     <div class="cBanner thai">${c.topBannerThai}</div>
     <div class="cHead">
       <div class="cPub thai"><span class="star">★</span>${c.publisherThai}</div>
-      <div class="cTtl thai">${c.titleThai}</div>
+      ${headTitle}
       <div class="cTtlJp">${c.titleJp}</div>
     </div>
     <div class="cArt">
       ${c.imageEl || c.svg}
+      ${artTitle}
       <div class="cBubble thai">${c.speechBubbleThai}</div>
       <div class="cPrice"><b>${c.priceBaht}</b><small class="thai">บาท</small></div>
     </div>
