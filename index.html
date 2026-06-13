@@ -907,11 +907,13 @@ const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/ge
    ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
 const ART_STYLE =
   "Authentic 1980s Thai 1-baht pulp horror comic cover (การ์ตูนเล่มละบาท), " +
-  "hand-painted by a self-taught provincial Thai artist in a crude naive 'heta-uma' childlike outsider style: " +
+  "hand-painted by a self-taught provincial Thai artist in a crude, CHARMING naive 'heta-uma' (clumsy-but-likeable) hand style: a little wonky and awkward but full of warmth and character — NOT slick, NOT uniform, NOT professional, NOT polished. " +
   "flat poster-like rendering with little or NO perspective and no photographic depth-of-field, everything pushed to a flat frontal plane, " +
-  "anatomy clumsy and a little wrong, faces elongated with subtly asymmetric, unbalanced, off-kilter features whose very wonkiness feels eerie and unsettling, " +
   "watercolour and gouache washes in an idiosyncratic lurid palette (off greens, bruised purples, sickly yellows, muddy oranges), " +
   "uneven hand-inked outlines, visible halftone dots and slightly off-register cheap newsprint printing, aged stained paper. " +
+  "IMPORTANT CHARACTER RULE: the GHOST/SPIRIT is the only monstrous figure — it alone has eerie, glowing or hollow dead/empty eyes and may be skeletal, rotting or grotesque. " +
+  "The HUMAN characters are ORDINARY, healthy, normal everyday Thai people (a pretty young woman, a normal young man, an old grandmother, a child, a monk, a family) with NORMAL human faces, NORMAL bodies and NORMAL frightened human eyes — they are NOT skeletal, NOT emaciated, NOT corpse-like, NOT zombie-faced, NOT monstrous. " +
+  "Give the humans varied, individual, ordinary faces with plain scared human eyes that are CLEARLY DIFFERENT from the ghost's eyes — do NOT give the ghost and the people the same bulging identical eyes. " +
   "NOT polished American/Western superhero comic art, NOT clean digital line art, NOT slick professional rendering, NOT 3D, NOT realistic depth";
 const CREATURES = [
   "a Krasue: a detached floating female head trailing glistening entrails, glowing red eyes",      // 0
@@ -994,7 +996,8 @@ function buildImagePrompt(meta, scene, theme = "") {
   const prompt =
     `${ART_STYLE}. COMPOSITION: ${composition}. ` +
     `Completely ignore realistic perspective and depth — keep everything flat and frontal on one plane; the figures are the whole point, the background is just a minimal flat backdrop. ` +
-    `The creature is ${monster}. Also present: ${cast}. ` +
+    `The creature is ${monster}. Also present: ${cast} ` +
+    `(the people are ORDINARY, healthy, normal-faced Thai humans — frightened but with plain normal human eyes, NOT skeletal, NOT corpse-like; only the ghost is monstrous). ` +
     `Mood/light: ${light}, ${mood}. A bare hint of setting (${setting}) only as a flat backdrop, not a deep detailed scene. ` +
     `Show it as a real worn 40-year-old cheap baht comic: browned sun-faded newsprint, foxing stains, water marks, creases, and frayed torn dog-eared worn edges and damaged corners on all four sides. ` +
     `Absolutely NO text, lettering, title, numbers, price, or speech bubbles anywhere in the image. ` +
