@@ -1108,14 +1108,17 @@ function register(c) { c.id = "c" + (++seq); LIB.set(c.id, c); return c; }
 
 // ---- レール・ラックの初期生成（SVGのみ・即時表示） ----
 const railInner = document.getElementById("railInner");
-for (let i = 0; i < 7; i++) {
-  const meta = buildLocalMeta(pick(ALL_THEMES));
-  const scene = inferScene(meta.theme || "");
-  const c = register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null });
+function addToRail(c) {
   const d = document.createElement("div");
   d.className = "hang";
   d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.42);
   railInner.appendChild(d);
+}
+// 初回は即時表示のためSVGで吊るす（dailyRackが返り次第AI画像へ差し替え）
+for (let i = 0; i < 7; i++) {
+  const meta = buildLocalMeta(pick(ALL_THEMES));
+  const scene = inferScene(meta.theme || "");
+  addToRail(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
 }
 
 // ---- 棚（ワイヤーラック） ----
@@ -1149,13 +1152,16 @@ function svgRackFallback() {
     const data = await r.json();
     note.remove();
     if (data && Array.isArray(data.covers) && data.covers.length) {
+      // 洗濯ばさみの列もSVGをやめ、生成画像（=本日のキャッシュ）に差し替える
+      railInner.innerHTML = "";
       data.covers.forEach((cv) => {
         const meta = buildLocalMeta(pick(ALL_THEMES));
         const c = register({
           ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: "",
           imageEl: `<img src="data:image/png;base64,${cv.imageBase64}" style="width:100%;display:block" alt="${meta.titleThai}">`,
         });
-        addToRack(c);
+        addToRail(c); // レール（吊るし）にAI画像
+        addToRack(c); // 棚にも同じAI画像
       });
       return;
     }
