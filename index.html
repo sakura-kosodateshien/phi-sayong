@@ -119,9 +119,17 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
   transform:scaleY(1.12);letter-spacing:-.01em;word-break:break-all}
 .cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
 /* タイトルを絵に入れる＝雑誌風フルブリード表紙 */
-.cTtlArt{position:absolute;left:8px;right:8px;top:54px;z-index:4;text-align:center;
-  font-size:42px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.92))}
+.cTop{position:absolute;left:6px;right:6px;top:11px;z-index:4;text-align:center}
+.cTtlArt{font-size:42px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.92)) drop-shadow(0 0 2px rgba(0,0,0,.8))}
+.cSubJp{margin-top:4px;color:#fff;font-weight:700;font-size:11px;letter-spacing:.12em;
+  text-shadow:1px 1px 0 #000,-1px -1px 0 #000,0 0 6px #000}
+/* 上部ノンブルの代わりの小さなインク版元スタンプ */
+.cStamp{position:absolute;left:9px;top:9px;z-index:5;display:inline-flex;align-items:center;gap:3px;
+  font-family:'Charm','Sriracha',sans-serif;font-weight:700;font-size:8px;line-height:1.05;
+  color:#83121b;background:rgba(255,249,230,.7);border:1.4px solid #83121b;border-radius:2px;
+  padding:2px 5px;transform:rotate(-5deg);opacity:.92;box-shadow:1px 1px 0 rgba(0,0,0,.25)}
+.cStamp .star{font-size:9px}
 .cover.titleArt{padding:6px}
 .magArt{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;border:2.5px solid #2a1c08;background:#000;line-height:0}
 .magArt>img,.magArt>svg{width:100%;height:100%;object-fit:cover;display:block}
@@ -938,14 +946,12 @@ const SETTINGS = [
   "a wooden pier over still black river water",                     // 13
 ];
 const COMPOS = [
-  "extreme close-up of the creature's face filling the frame",
-  "dramatic low angle, the creature looming enormous over tiny figures below",
-  "wide cinematic establishing shot, the creature small but unmistakable",
-  "over-the-shoulder view from a fleeing victim glancing back in terror",
-  "the creature bursting up out of water or through the ground toward the viewer",
-  "split composition: monster fills the top, terrified people cower at the bottom",
-  "off-kilter Dutch angle for chaos and vertigo",
-  "a clawed hand thrusting toward the viewer in forced perspective",
+  "the ghost looming huge and close right behind a cluster of terrified people, all drawn large and frontal, faces filling the lower half of the frame",
+  "extreme frontal close-up cramming the ghost's face and a screaming victim's face together, filling the entire frame",
+  "the spirit towering over cowering villagers, every figure big and frontal and packed edge to edge with almost no empty space",
+  "a tight knot of frightened people in front with the ghost's face and clawed reaching hands pressing in from behind them, no background depth",
+  "the ghost and a victim locked in a head-on frontal confrontation, both rendered large and flat, eyes wide",
+  "waist-up figures: the ghost seizing a screaming person by the shoulder, both shown big and close",
 ];
 const CAST = [
   "a lone terrified child clutching a candle",
@@ -986,11 +992,13 @@ function buildImagePrompt(meta, scene, theme = "") {
   const composition = pick(COMPOS), cast = pick(CAST), light = pick(LIGHTS), mood = pick(MOODS);
   const seed = RI(1, 1000000000);
   const prompt =
-    `${ART_STYLE}. ${composition}. The creature is ${monster}. ` +
-    `Scene: ${setting}, lit by ${light}, dominated by ${mood}. Also present: ${cast}. ` +
-    `Use a highly varied, original composition — do NOT default to a monk plus a stilt house. ` +
-    `No embedded text, lettering, title, or speech bubbles inside the artwork itself. ` +
-    `Keep the top-left and bottom-right corners relatively uncluttered for an overlaid speech bubble and price tag. ` +
+    `${ART_STYLE}. COMPOSITION: ${composition}. ` +
+    `Completely ignore realistic perspective and depth — keep everything flat and frontal on one plane; the figures are the whole point, the background is just a minimal flat backdrop. ` +
+    `The creature is ${monster}. Also present: ${cast}. ` +
+    `Mood/light: ${light}, ${mood}. A bare hint of setting (${setting}) only as a flat backdrop, not a deep detailed scene. ` +
+    `Show it as a real worn 40-year-old cheap baht comic: browned sun-faded newsprint, foxing stains, water marks, creases, and frayed torn dog-eared worn edges and damaged corners on all four sides. ` +
+    `Absolutely NO text, lettering, title, numbers, price, or speech bubbles anywhere in the image. ` +
+    `Keep the top area and bottom-right corner a little clearer for a title and small price mark added later. ` +
     `Variation seed ${seed}.`;
   return { prompt, seed, monster, setting };
 }
@@ -1031,50 +1039,20 @@ async function makeComic(theme) {
 }
 
 function coverHTML(c) {
-  const p = c.palette;
   const ts = c.titleStyle || TITLE_STYLES[0];
   const tStyle = `font-family:${ts.f};color:${ts.c};text-shadow:${ts.s};font-weight:${ts.w || 900}`;
   const art = c.imageEl || c.svg;
-  const bands = `<span style="background:${p.band1}">รวมนิยายภาพ</span><span style="background:${p.band2}">เล่มเดียวจบ</span><span style="background:${p.band3}">หลายเรื่องหลายรส</span>`;
-  const bubbleSpots = c.titleInArt
-    ? ["left:7px;bottom:15%", "right:7px;top:44%", "left:7px;top:50%", "left:8px;right:8px;bottom:13%;max-width:none"]
-    : ["left:7px;top:7px", "right:7px;top:7px", "left:7px;top:38%", "right:7px;top:34%"];
-  const bspot = bubbleSpots[c.bubbleSpot ?? 0];
-  const bubble = `<div class="cBubble thai ${c.bubbleShape || "oval"}" style="${bspot};transform:rotate(${c.bubbleRot || 0}deg)">${c.speechBubbleThai}</div>`;
   const price = `<div class="cPrice"><b>${c.priceBaht}</b><small class="thai">บาท</small></div>`;
-
-  if (c.titleInArt) {
-    // 雑誌風フルブリード：絵を天地いっぱい、タイトルは絵の上、和文は上のマストヘッドへ
-    return `<div class="cover titleArt" data-id="${c.id}">
-      <div class="magArt">
-        ${art}
-        <div class="magChrome thai">
-          <div class="bands">${bands}</div>
-          <div class="cBanner">${c.topBannerThai}</div>
-          <div class="magSub">
-            <span class="cPub2"><span class="star">★</span>${c.publisherThai}</span>
-            <span class="magJp">${c.titleJp}</span>
-          </div>
-        </div>
-        <div class="cTtlArt thai" style="${tStyle}">${c.titleThai}</div>
-        ${bubble}
-        ${price}
-      </div>
-    </div>`;
-  }
-
-  // 通常：帯にタイトル（書体・色のバリエーションあり）
-  return `<div class="cover" data-id="${c.id}">
-    <div class="bands thai">${bands}</div>
-    <div class="cBanner thai">${c.topBannerThai}</div>
-    <div class="cHead">
-      <div class="cPub thai"><span class="star">★</span>${c.publisherThai}</div>
-      <div class="cTtl thai" style="${tStyle}">${c.titleThai}</div>
-      <div class="cTtlJp">${c.titleJp}</div>
-    </div>
-    <div class="cArt">
+  // 上部ノンブルの色帯は廃止。雰囲気を壊さない小さなインク版元スタンプのみ。吹き出しは無し。
+  const stamp = `<div class="cStamp thai"><span class="star">★</span><span>${c.publisherThai}</span></div>`;
+  return `<div class="cover titleArt" data-id="${c.id}">
+    <div class="magArt">
       ${art}
-      ${bubble}
+      ${stamp}
+      <div class="cTop">
+        <div class="cTtlArt thai" style="${tStyle}">${c.titleThai}</div>
+        <div class="cSubJp">${c.titleJp}</div>
+      </div>
       ${price}
     </div>
   </div>`;
