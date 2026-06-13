@@ -118,12 +118,14 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
   text-shadow:1.5px 1.5px 0 var(--yel), 3px 3px 0 #7a1020, -1px -1px 0 var(--yel);
   transform:scaleY(1.12);letter-spacing:-.01em;word-break:break-all}
 .cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
-/* タイトルを絵に入れる＝雑誌風フルブリード表紙 */
+/* タイトルを絵に入れる＝雑誌風フルブリード表紙：モダンなボカシ影は使わず、ベタ＋かすれ印刷 */
 .cTop{position:absolute;left:6px;right:6px;top:11px;z-index:4;text-align:center}
 .cTtlArt{font-size:42px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
-  filter:drop-shadow(0 2px 4px rgba(0,0,0,.92)) drop-shadow(0 0 2px rgba(0,0,0,.8))}
-.cSubJp{margin-top:4px;color:#fff;font-weight:700;font-size:11px;letter-spacing:.12em;
-  text-shadow:1px 1px 0 #000,-1px -1px 0 #000,0 0 6px #000}
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.32 0.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6 -1.25'/%3E%3C/filter%3E%3Crect width='240' height='120' filter='url(%23k)'/%3E%3C/svg%3E");
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.32 0.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6 -1.25'/%3E%3C/filter%3E%3Crect width='240' height='120' filter='url(%23k)'/%3E%3C/svg%3E");
+  -webkit-mask-size:230px auto;mask-size:230px auto;-webkit-mask-repeat:repeat;mask-repeat:repeat}
+.cSubJp{margin-top:4px;color:#f3e6c8;font-weight:700;font-size:11px;letter-spacing:.12em;
+  text-shadow:1px 1px 0 #000,-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000}
 /* 上部ノンブルの代わりの小さなインク版元スタンプ */
 .cStamp{position:absolute;left:9px;top:9px;z-index:5;display:inline-flex;align-items:center;gap:3px;
   font-family:'Charm','Sriracha',sans-serif;font-weight:700;font-size:8px;line-height:1.05;
@@ -302,11 +304,6 @@ footer{margin-top:30px;background:#0e0a18;padding-bottom:34px}
   </div>
 </header>
 
-<div id="rail">
-  <div class="bar"></div>
-  <div id="railInner"></div>
-</div>
-
 <main class="wrap">
 
   <section id="counter">
@@ -326,9 +323,12 @@ footer{margin-top:30px;background:#0e0a18;padding-bottom:34px}
 
   <section id="rack">
     <div class="sectionTitle">本日の棚</div>
-    <div class="sectionSub">ワイヤーラックの一冊をつまむと、裏表紙まで読めます（毎日入荷が変わります）</div>
+    <div class="sectionSub">洗濯ばさみの一冊をつまむと、裏表紙まで読めます（毎日入荷が変わります）</div>
     <div class="rackBoard">
-      <div class="pockets" id="pockets"></div>
+      <div id="rail">
+        <div class="bar"></div>
+        <div id="railInner"></div>
+      </div>
     </div>
   </section>
 
@@ -845,12 +845,12 @@ const TH_BUBBLES = [
 // タイトル文字のバリエーション（書体・色・縁取り）。バーツコミックの手描き見出し感を再現。
 const TITLE_STYLES = [
   { f:"'Chonburi',cursive",          c:"#e8202e", s:"2px 2px 0 #f4c20d,4px 4px 0 #7a1020,-1px -1px 0 #fff",         w:400 },
-  { f:"'Pattaya',sans-serif",        c:"#f4c20d", s:"2px 2px 0 #111,-1px -1px 0 #d62828,0 0 3px #000",             w:400 },
-  { f:"'Charmonman',cursive",        c:"#ffffff", s:"0 0 5px #d62828,2px 2px 0 #000,-1px -1px 0 #000",             w:700 },
+  { f:"'Pattaya',sans-serif",        c:"#f4c20d", s:"2px 2px 0 #111,-1px -1px 0 #d62828,3px 3px 0 #000",            w:400 },
+  { f:"'Charmonman',cursive",        c:"#ffffff", s:"2px 2px 0 #d62828,-2px -2px 0 #000,3px 3px 0 #7a1020",         w:700 },
   { f:"'Sriracha',cursive",          c:"#ffe24a", s:"2px 2px 0 #b01020,3px 3px 0 #000",                            w:400 },
   { f:"'Chonburi',cursive",          c:"#1a8a3c", s:"2px 2px 0 #ffe24a,-1px -1px 0 #000,3px 3px 0 #06351a",        w:400 },
   { f:"'Pattaya',sans-serif",        c:"#ffffff", s:"2px 2px 0 #d62828,4px 4px 0 #000",                           w:400 },
-  { f:"'Charm',cursive",             c:"#ff7a1a", s:"2px 2px 0 #2a0a00,-1px -1px 0 #ffe24a,0 0 4px #000",          w:700 },
+  { f:"'Charm',cursive",             c:"#ff7a1a", s:"2px 2px 0 #2a0a00,-1px -1px 0 #ffe24a,3px 3px 0 #000",        w:700 },
   { f:"'Noto Sans Thai',sans-serif", c:"#e8202e", s:"1.5px 1.5px 0 #f4c20d,3px 3px 0 #7a1020,-1px -1px 0 #f4c20d", w:900 },
 ];
 
@@ -906,15 +906,13 @@ const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/ge
    完成プロンプト(prompt)を組み立ててサーバーに渡す。
    ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
 const ART_STYLE =
-  "Authentic 1980s Thai 1-baht pulp horror comic cover (การ์ตูนเล่มละบาท), " +
-  "hand-painted by a self-taught provincial Thai artist in a crude, CHARMING naive 'heta-uma' (clumsy-but-likeable) hand style: a little wonky and awkward but full of warmth and character — NOT slick, NOT uniform, NOT professional, NOT polished. " +
-  "flat poster-like rendering with little or NO perspective and no photographic depth-of-field, everything pushed to a flat frontal plane, " +
-  "watercolour and gouache washes in an idiosyncratic lurid palette (off greens, bruised purples, sickly yellows, muddy oranges), " +
-  "uneven hand-inked outlines, visible halftone dots and slightly off-register cheap newsprint printing, aged stained paper. " +
-  "IMPORTANT CHARACTER RULE: the GHOST/SPIRIT is the only monstrous figure — it alone has eerie, glowing or hollow dead/empty eyes and may be skeletal, rotting or grotesque. " +
-  "The HUMAN characters are ORDINARY, healthy, normal everyday Thai people (a pretty young woman, a normal young man, an old grandmother, a child, a monk, a family) with NORMAL human faces, NORMAL bodies and NORMAL frightened human eyes — they are NOT skeletal, NOT emaciated, NOT corpse-like, NOT zombie-faced, NOT monstrous. " +
-  "Give the humans varied, individual, ordinary faces with plain scared human eyes that are CLEARLY DIFFERENT from the ghost's eyes — do NOT give the ghost and the people the same bulging identical eyes. " +
-  "NOT polished American/Western superhero comic art, NOT clean digital line art, NOT slick professional rendering, NOT 3D, NOT realistic depth";
+  "Authentic 1980s Thai 1-baht pulp horror comic cover (การ์ตูนเล่มละบาท), hand-painted in watercolour and gouache by a provincial Thai pulp illustrator. " +
+  "Lurid garish palette (off greens, bruised purples, sickly yellows, muddy oranges, hot pinks), uneven hand-inked outlines, visible halftone dots, slightly off-register cheap newsprint printing, aged stained paper. Flat poster-like, little or no perspective. " +
+  "HOW TO DRAW THE PEOPLE: the human characters are drawn REALISTICALLY in a melodramatic 1970s-80s Thai romance/pulp-comic manner — a BEAUTIFUL glamorous heroine and a HANDSOME hero, attractive realistic faces with large expressive REALISTIC human eyes. They AIM for realism: NOT cartoonish, NOT comical, NOT caricatured, NOT childish, NOT naive-doodle, NOT chibi. " +
+  "But the artist is an amateur, so the 'heta-uma' charm appears ONLY as slightly OFF, slightly unbalanced facial proportions and a little awkward anatomy — the faces still read as realistic attractive people, merely drawn by a not-quite-skilled hand. " +
+  "HOW TO DRAW THE GHOST: only the GHOST/SPIRIT is monstrous and grotesque — rotting, decayed or skeletal, with dead, hollow or glowing eyes. " +
+  "CRUCIAL EYE RULE: the realistic attractive humans and the monstrous ghost must look COMPLETELY DIFFERENT, ESPECIALLY THE EYES — the humans have normal beautiful realistic human eyes, the ghost has dead/glowing monster eyes. NEVER give the people the ghost's eyes; do not make everyone share the same staring bulging eyes. " +
+  "NOT American/Western superhero comic art, NOT clean digital line art, NOT slick modern rendering, NOT 3D.";
 const CREATURES = [
   "a Krasue: a detached floating female head trailing glistening entrails, glowing red eyes",      // 0
   "a Phi Tai Hong: the vengeful ghost of one who died violently, blood-soaked and deathly pale",   // 1
@@ -956,15 +954,24 @@ const COMPOS = [
   "waist-up figures: the ghost seizing a screaming person by the shoulder, both shown big and close",
 ];
 const CAST = [
-  "a lone terrified child clutching a candle",
-  "a young novice monk recoiling in fear",
-  "an elderly woman frozen in horror",
-  "a courting couple clinging together",
-  "a night-market vendor knocking over their stall",
-  "a songthaew driver scrambling from the cab",
-  "an entire family fleeing with lanterns",
-  "no humans at all — only the creature in an empty eerie scene",
-  "a sleeping person unaware of the horror leaning over them",
+  "a beautiful glamorous Thai heroine clinging in terror to a handsome young hero",
+  "a beautiful young woman recoiling, her handsome lover trying to shield her",
+  "a cruel human villain — a man whose handsome-but-hard face is twisted with hatred and malice",
+  "a jealous rival woman glaring with venomous hatred at a beautiful couple",
+  "a handsome young man and a pretty woman caught together in the curse",
+  "a frightened young monk beside a beautiful village woman",
+  "an elderly couple and their pretty grown daughter cowering together",
+  "a sneering gangster-type man with a scar and a menacing, hate-filled glare",
+  "no humans — only the spirit alone in an empty eerie scene",
+];
+const PLOTS = [
+  "MELODRAMA: a woman betrayed by her unfaithful lover died heartbroken and returns as a vengeful spirit to curse him",
+  "MELODRAMA: a cheating husband haunted by the ghost of his wronged drowned wife",
+  "MELODRAMA: a beautiful mistress murdered out of jealousy, returning as a vengeful ghost",
+  "MELODRAMA: a love-triangle gone wrong — a beautiful woman, her lover, and a jealous rival, sealed by a curse",
+  "MELODRAMA: a forbidden romance cursed by a spurned suitor who died of heartbreak",
+  "a cruel human villain and the vengeful ghost of the innocent victim he wronged",
+  "a quiet village family suddenly confronted by a hungry spirit in the night",
 ];
 const LIGHTS = [
   "harsh full-moon light", "the orange glow of a single candle",
@@ -991,14 +998,14 @@ function buildImagePrompt(meta, scene, theme = "") {
     [/墓|grave/i, 10], [/列車|バス|train|bus/i, 7], [/市場|屋台|market/i, 4],
     [/村|家|屋|village/i, 5],
   ]);
-  const composition = pick(COMPOS), cast = pick(CAST), light = pick(LIGHTS), mood = pick(MOODS);
+  const composition = pick(COMPOS), cast = pick(CAST), light = pick(LIGHTS), mood = pick(MOODS), plot = pick(PLOTS);
   const seed = RI(1, 1000000000);
   const prompt =
-    `${ART_STYLE}. COMPOSITION: ${composition}. ` +
-    `Completely ignore realistic perspective and depth — keep everything flat and frontal on one plane; the figures are the whole point, the background is just a minimal flat backdrop. ` +
-    `The creature is ${monster}. Also present: ${cast} ` +
-    `(the people are ORDINARY, healthy, normal-faced Thai humans — frightened but with plain normal human eyes, NOT skeletal, NOT corpse-like; only the ghost is monstrous). ` +
-    `Mood/light: ${light}, ${mood}. A bare hint of setting (${setting}) only as a flat backdrop, not a deep detailed scene. ` +
+    `${ART_STYLE} COMPOSITION: ${composition}. ` +
+    `Completely ignore realistic perspective and depth — flat and frontal; the figures are the whole point, the background is only a minimal flat backdrop. ` +
+    `STORY: ${plot}. The ghost is ${monster}. In front of it: ${cast}. ` +
+    `Remember — the people are REALISTIC and attractive (a beautiful heroine / a handsome hero, or a hate-filled human villain) with normal realistic human eyes; ONLY the ghost is monstrous, and its eyes must differ completely from the humans'. ` +
+    `Mood/light: ${light}, ${mood}. Only a bare flat hint of setting (${setting}), not a deep detailed scene. ` +
     `Show it as a real worn 40-year-old cheap baht comic: browned sun-faded newsprint, foxing stains, water marks, creases, and frayed torn dog-eared worn edges and damaged corners on all four sides. ` +
     `Absolutely NO text, lettering, title, numbers, price, or speech bubbles anywhere in the image. ` +
     `Keep the top area and bottom-right corner a little clearer for a title and small price mark added later. ` +
@@ -1087,44 +1094,33 @@ const LIB = new Map();
 let seq = 0;
 function register(c) { c.id = "c" + (++seq); LIB.set(c.id, c); return c; }
 
-// ---- レール・ラックの初期生成（SVGのみ・即時表示） ----
+// ---- 本日の棚（洗濯ばさみ吊るし）：生成コミックがここにぶら下がる ----
 const railInner = document.getElementById("railInner");
-function addToRail(c) {
+function hangCover(c, prepend = false) {
   const d = document.createElement("div");
   d.className = "hang";
-  d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.42);
-  railInner.appendChild(d);
+  d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.5);
+  if (prepend && railInner.firstChild) railInner.insertBefore(d, railInner.firstChild);
+  else railInner.appendChild(d);
 }
+// 召喚側の後方互換：addToRack/addToRail はすべて吊るしに集約
+const addToRack = hangCover;
+const addToRail = hangCover;
 // 初回は即時表示のためSVGで吊るす（dailyRackが返り次第AI画像へ差し替え）
-for (let i = 0; i < 7; i++) {
+for (let i = 0; i < 6; i++) {
   const meta = buildLocalMeta(pick(ALL_THEMES));
   const scene = inferScene(meta.theme || "");
-  addToRail(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
+  hangCover(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
 }
 
-// ---- 棚（ワイヤーラック） ----
-const pockets = document.getElementById("pockets");
-function addToRack(c, prepend = false) {
-  const d = document.createElement("div");
-  d.className = "pocket";
-  d.innerHTML = scaled(coverHTML(c), 0.56);
-  if (prepend && pockets.firstChild) pockets.insertBefore(d, pockets.firstChild);
-  else pockets.appendChild(d);
-}
 const FUNC_RACK = FUNC_URL.replace("generateCover", "dailyRack");
-function svgRackFallback() {
-  for (let i = 0; i < 6; i++) {
-    const meta = buildLocalMeta(pick(ALL_THEMES));
-    const scene = inferScene(meta.titleJp || "");
-    addToRack(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
-  }
-}
 (async () => {
+  const board = railInner.closest(".rackBoard") || railInner.parentElement;
   const note = document.createElement("div");
   note.id = "rackLoading";
-  note.style.cssText = "grid-column:1/-1;color:#e2d2ac;text-align:center;padding:26px 0;font-size:13px";
-  note.innerHTML = '<span style="font-size:28px">👻</span><br>本日の入荷を準備中…（初回は少し時間がかかります）';
-  pockets.appendChild(note);
+  note.style.cssText = "color:#e2d2ac;text-align:center;padding:14px 0 2px;font-size:12.5px";
+  note.innerHTML = '<span style="font-size:24px">👻</span> 本日の入荷を準備中…（初回は少し時間がかかります）';
+  board.appendChild(note);
   try {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 130000);
@@ -1133,25 +1129,23 @@ function svgRackFallback() {
     const data = await r.json();
     note.remove();
     if (data && Array.isArray(data.covers) && data.covers.length) {
-      // 洗濯ばさみの列もSVGをやめ、生成画像（=本日のキャッシュ）に差し替える
-      railInner.innerHTML = "";
+      railInner.innerHTML = ""; // 初回のSVGプレースホルダを生成画像に差し替え
       data.covers.forEach((cv) => {
         const meta = buildLocalMeta(pick(ALL_THEMES));
         const c = register({
           ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: "",
           imageEl: `<img src="data:image/png;base64,${cv.imageBase64}" style="width:100%;display:block" alt="${meta.titleThai}">`,
         });
-        addToRail(c); // レール（吊るし）にAI画像
-        addToRack(c); // 棚にも同じAI画像
+        hangCover(c); // 本日の棚に生成コミックを吊るす
       });
       return;
     }
   } catch (e) {
-    console.warn("dailyRack取得失敗→SVGフォールバック", e.message);
-    const n = document.getElementById("rackLoading");
-    if (n) n.remove();
+    console.warn("dailyRack取得失敗→初回のSVGをそのまま使用", e.message);
   }
-  svgRackFallback();
+  // 失敗時は初回に吊るした6冊のSVGをそのまま本日の棚とする
+  const n = document.getElementById("rackLoading");
+  if (n) n.remove();
 })();
 
 // ---- チップ ----
