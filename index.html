@@ -182,7 +182,7 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
   border:5px solid #14181f;border-radius:8px;padding:20px 14px;
   box-shadow:0 12px 36px rgba(0,0,0,.55), inset 0 0 50px rgba(0,0,0,.45);
 }
-.pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+.pockets{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
 .pocket{
   position:relative;border:2.5px solid var(--wire);border-radius:4px;
   background:rgba(255,255,255,.04);padding:10px 8px 8px;
@@ -228,7 +228,7 @@ footer{margin-top:30px;background:#0e0a18;padding-bottom:34px}
 /* ===== モーダル ===== */
 #modal{position:fixed;inset:0;background:rgba(8,4,14,.86);z-index:200;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:34px 12px}
 #modal.open{display:flex}
-#modalInner{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start;position:relative;max-width:640px}
+#modalInner{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start;position:relative;max-width:880px}
 #modalClose{position:fixed;top:14px;right:16px;z-index:210;background:var(--yel);border:3px solid #6a0a12;color:var(--red);
   font-weight:900;font-size:18px;width:44px;height:44px;border-radius:50%;cursor:pointer;box-shadow:0 3px 0 #6a0a12}
 .teeBtn{display:block;width:100%;margin-top:12px;padding:10px;text-align:center;font-weight:900;font-size:12px;
@@ -916,8 +916,9 @@ function backHTML(c) {
 }
 
 function scaled(html, scale) {
-  return `<div class="scl" style="width:${COVER_W * scale}px;height:${COVER_H * scale}px">
-    <div style="transform:scale(${scale});transform-origin:0 0">${html}</div></div>`;
+  // zoom はレイアウトの箱ごと拡縮するため、中身が表紙(350px)でも裏表紙(380px)でも
+  // 箱の幅・高さが中身ぴったりになり、はみ出し・重なりが起きない。
+  return `<div class="scl" style="zoom:${scale}">${html}</div>`;
 }
 
 // ---- 状態 ----
@@ -984,7 +985,7 @@ async function summon(t) {
     } else {
       // 残り枚数バッジ
       const badge = c._remaining !== undefined
-        ? `<div style="color:#f4c20d;font-size:11px;text-align:center;margin-bottom:8px">本日の残り入荷: あと${c._remaining}冊</div>` : "";
+        ? `<div style="width:100%;color:#f4c20d;font-size:11px;text-align:center;margin-bottom:8px">本日の残り入荷: あと${c._remaining}冊</div>` : "";
       stage.innerHTML = badge + scaled(coverHTML(c), 1) + scaled(backHTML(c), 1);
       addToRack(c, true);
     }
