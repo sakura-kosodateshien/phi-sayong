@@ -120,7 +120,7 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
 .cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
 /* タイトルを絵に入れる＝雑誌風フルブリード表紙：モダンなボカシ影は使わず、ベタ＋かすれ印刷 */
 .cTop{position:absolute;left:6px;right:6px;top:11px;z-index:4;text-align:center}
-.cTtlArt{font-size:42px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
+.cTtlArt{font-size:50px;line-height:0.98;letter-spacing:-.01em;white-space:nowrap;display:inline-block;transform-origin:center top;
   -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.32 0.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6 -1.25'/%3E%3C/filter%3E%3Crect width='240' height='120' filter='url(%23k)'/%3E%3C/svg%3E");
   mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='120'%3E%3Cfilter id='k'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.32 0.4' numOctaves='2' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 6 -1.25'/%3E%3C/filter%3E%3Crect width='240' height='120' filter='url(%23k)'/%3E%3C/svg%3E");
   -webkit-mask-size:230px auto;mask-size:230px auto;-webkit-mask-repeat:repeat;mask-repeat:repeat}
@@ -905,14 +905,29 @@ const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/ge
    それぞれ独立にランダム選択し、組み合わせ数を一気に増やす。
    完成プロンプト(prompt)を組み立ててサーバーに渡す。
    ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
-const ART_STYLE =
-  "Authentic 1980s Thai 1-baht pulp horror comic cover (การ์ตูนเล่มละบาท), hand-painted in watercolour and gouache by a provincial Thai pulp illustrator. " +
-  "Lurid garish palette (off greens, bruised purples, sickly yellows, muddy oranges, hot pinks), uneven hand-inked outlines, visible halftone dots, slightly off-register cheap newsprint printing, aged stained paper. Flat poster-like, little or no perspective. " +
-  "HOW TO DRAW THE PEOPLE: the human characters are drawn REALISTICALLY in a melodramatic 1970s-80s Thai romance/pulp-comic manner — a BEAUTIFUL glamorous heroine and a HANDSOME hero, attractive realistic faces with large expressive REALISTIC human eyes. They AIM for realism: NOT cartoonish, NOT comical, NOT caricatured, NOT childish, NOT naive-doodle, NOT chibi. " +
-  "But the artist is an amateur, so the 'heta-uma' charm appears ONLY as slightly OFF, slightly unbalanced facial proportions and a little awkward anatomy — the faces still read as realistic attractive people, merely drawn by a not-quite-skilled hand. " +
-  "HOW TO DRAW THE GHOST: only the GHOST/SPIRIT is monstrous and grotesque — rotting, decayed or skeletal, with dead, hollow or glowing eyes. " +
-  "CRUCIAL EYE RULE: the realistic attractive humans and the monstrous ghost must look COMPLETELY DIFFERENT, ESPECIALLY THE EYES — the humans have normal beautiful realistic human eyes, the ghost has dead/glowing monster eyes. NEVER give the people the ghost's eyes; do not make everyone share the same staring bulging eyes. " +
-  "NOT American/Western superhero comic art, NOT clean digital line art, NOT slick modern rendering, NOT 3D.";
+// 共通の地（画材・古紙・文字なし・下手さ）。愛憎/ピーの両スタイルで共有。
+const BASE_STYLE =
+  "Authentic 1980s Thai 1-baht pulp comic cover (การ์ตูนเล่มละบาท), hand-painted in LAYERED WATERCOLOUR AND GOUACHE — clearly VISIBLE BRUSH STROKES, glazed built-up washes, and an ODD, slightly-wrong amateur sense of volume and shading (modelled, not flat, but the volume comes out a bit strange). " +
+  "Lurid garish palette, uneven hand-inked outlines, halftone dots, off-register cheap newsprint printing on browned, sun-faded, stained paper with foxing spots, water marks, creases and frayed torn dog-eared worn edges and damaged corners on all four sides. " +
+  "Drawn by a SELF-TAUGHT, genuinely UNSKILLED provincial artist — the human faces must NOT be neat or well-proportioned: they are clearly AWKWARD, lopsided and a little WRONG, with off-balance, mismatched features (this clumsy 'heta-uma' amateurism is ESSENTIAL), yet still meant as attractive people. NOT polished, NOT professional, NOT clean digital art, NOT 3D render, NOT cartoon/anime/chibi. " +
+  "Poster-like frontal composition, figures large and filling the frame, background only a minimal backdrop. " +
+  "Absolutely NO text, lettering, title, numbers, price or speech bubbles anywhere; keep the top area and the bottom-right corner a little clearer for a title and price added later.";
+// 愛憎スタイル（人間関係のもつれ・ドロドロ）
+const AIZO_DRAMA = [
+  "a weeping wife clutching her child while her unfaithful husband turns away toward his glamorous mistress",
+  "a love-hate triangle — a heartbroken beautiful woman, the man who betrayed her, and the scheming other woman — faces full of tears, rage and jealousy",
+  "a bitter family melodrama: a sobbing woman, a furious husband, and a defeated man crawling below, accusing faces crowding the background",
+  "a jealous mistress confronting a tearful wife while the torn, guilty husband looks on in anguish",
+  "lovers ripped apart by betrayal — a crying woman, a cold-hearted man, and a vengeful rival, raw emotion on every face",
+  "a married couple's love turned to hatred — bitter accusation and tears between husband and wife, the other woman lurking behind",
+];
+const PHI_CAST = [
+  "ordinary terrified villagers recoiling",
+  "a frightened family with a crying child and an old grandmother",
+  "a young couple screaming and clinging together",
+  "a terrified young monk and a village woman",
+  "a lone screaming victim",
+];
 const CREATURES = [
   "a Krasue: a detached floating female head trailing glistening entrails, glowing red eyes",      // 0
   "a Phi Tai Hong: the vengeful ghost of one who died violently, blood-soaked and deathly pale",   // 1
@@ -988,7 +1003,24 @@ function biasPick(theme, table, map) {
   return pick(table);
 }
 function buildImagePrompt(meta, scene, theme = "") {
-  // テーマのキーワードで怪異/舞台をゆるく寄せ、その他の軸は完全ランダム
+  const seed = RI(1, 1000000000);
+  // タイトルごとにスタイルを決定（愛憎とピーは混ぜない）
+  let style;
+  if (/愛|恋|夫|妻|嫁|婚|不倫|浮気|愛人|三角|嫉妬|未練|心中|裏切/i.test(theme)) style = "aizo";
+  else if (/クラスー|krasue|蛇|ナーギ|僧|坊|血|ゴア|gore|幽霊|霊|怨|呪|化け|怪|骸|死体|ゾンビ|食人|鬼/i.test(theme)) style = "phi";
+  else style = Math.random() < 0.45 ? "aizo" : "phi";
+
+  if (style === "aizo") {
+    const drama = pick(AIZO_DRAMA), mood = pick(MOODS), light = pick(LIGHTS);
+    const prompt =
+      `${BASE_STYLE} STYLE = THAI 'LOVE-HATE' MELODRAMA cover (this is NOT a ghost/horror cover): ` +
+      `the entire picture is a messy tangle of human relationships — ${drama}. ` +
+      `Several realistic human characters together in emotional confrontation; show clearly the tears, fury, longing and jealousy on their faces. The dorodoro human drama IS the whole subject. ` +
+      `At most ONE faint small grey ghostly face hovering in the far background — but NO big monster, NO gore, NO skeleton. ` +
+      `${light}, ${mood}. Variation seed ${seed}.`;
+    return { prompt, seed, style, monster: "", setting: "" };
+  }
+  // phi（幽霊・恐怖・グロ）
   const monster = biasPick(theme, CREATURES, [
     [/クラスー|krasue|生首|首/i, 0], [/蛇|ナーギ|snake|python/i, 11],
     [/僧|坊|monk/i, 7], [/花嫁|嫁|bride/i, 8], [/水死|溺|drown|運河|沼/i, 12],
@@ -998,19 +1030,14 @@ function buildImagePrompt(meta, scene, theme = "") {
     [/墓|grave/i, 10], [/列車|バス|train|bus/i, 7], [/市場|屋台|market/i, 4],
     [/村|家|屋|village/i, 5],
   ]);
-  const composition = pick(COMPOS), cast = pick(CAST), light = pick(LIGHTS), mood = pick(MOODS), plot = pick(PLOTS);
-  const seed = RI(1, 1000000000);
+  const composition = pick(COMPOS), cast = pick(PHI_CAST), light = pick(LIGHTS), mood = pick(MOODS);
   const prompt =
-    `${ART_STYLE} COMPOSITION: ${composition}. ` +
-    `Completely ignore realistic perspective and depth — flat and frontal; the figures are the whole point, the background is only a minimal flat backdrop. ` +
-    `STORY: ${plot}. The ghost is ${monster}. In front of it: ${cast}. ` +
-    `Remember — the people are REALISTIC and attractive (a beautiful heroine / a handsome hero, or a hate-filled human villain) with normal realistic human eyes; ONLY the ghost is monstrous, and its eyes must differ completely from the humans'. ` +
-    `Mood/light: ${light}, ${mood}. Only a bare flat hint of setting (${setting}), not a deep detailed scene. ` +
-    `Show it as a real worn 40-year-old cheap baht comic: browned sun-faded newsprint, foxing stains, water marks, creases, and frayed torn dog-eared worn edges and damaged corners on all four sides. ` +
-    `Absolutely NO text, lettering, title, numbers, price, or speech bubbles anywhere in the image. ` +
-    `Keep the top area and bottom-right corner a little clearer for a title and small price mark added later. ` +
-    `Variation seed ${seed}.`;
-  return { prompt, seed, monster, setting };
+    `${BASE_STYLE} STYLE = THAI 'PHI' GHOST-HORROR cover: ${composition}. ` +
+    `The monstrous ghost is ${monster} — grotesque and rotting with dead or glowing eyes; it is the ONLY monstrous figure. ` +
+    `In front of it, ordinary frightened humans with normal human eyes (NOT skeletal, NOT corpse-like): ${cast}. ` +
+    `Eerie, lurid and a little gory; the ghost's eyes and the humans' eyes look completely different. ` +
+    `Lit by ${light}, ${mood}. A bare flat hint of setting (${setting}). Variation seed ${seed}.`;
+  return { prompt, seed, style, monster, setting };
 }
 
 async function makeComic(theme) {
@@ -1068,6 +1095,27 @@ function coverHTML(c) {
   </div>`;
 }
 
+// タイトルが横幅に入らなければ長体（横方向に圧縮）をかけて1行に収める
+function fitTitle(scope) {
+  const els = (scope || document).querySelectorAll(".cTtlArt");
+  els.forEach((el) => {
+    el.style.transform = "scaleX(1)";
+    const box = el.parentElement; // .cTop
+    if (!box) return;
+    const avail = box.clientWidth;
+    const w = el.scrollWidth;
+    if (avail > 0 && w > avail) {
+      el.style.transform = "scaleX(" + Math.max(0.5, avail / w).toFixed(3) + ")";
+    }
+  });
+}
+function fitTitlesSoon(scope) {
+  const run = () => requestAnimationFrame(() => fitTitle(scope));
+  run();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+  setTimeout(run, 400);
+}
+
 function backHTML(c) {
   const stories = c.stories.map(s =>
     `<div class="cbStory"><div class="th thai">${s.thai}</div><div class="jp">${s.jp}</div></div>`).join("");
@@ -1102,6 +1150,7 @@ function hangCover(c, prepend = false) {
   d.innerHTML = `<div class="clip"></div>` + scaled(coverHTML(c), 0.5);
   if (prepend && railInner.firstChild) railInner.insertBefore(d, railInner.firstChild);
   else railInner.appendChild(d);
+  fitTitlesSoon(d);
 }
 // 召喚側の後方互換：addToRack/addToRail はすべて吊るしに集約
 const addToRack = hangCover;
@@ -1182,6 +1231,7 @@ async function summon(t) {
       const badge = c._remaining !== undefined
         ? `<div style="width:100%;color:#f4c20d;font-size:11px;text-align:center;margin-bottom:8px">本日の残り入荷: あと${c._remaining}冊</div>` : "";
       stage.innerHTML = badge + scaled(coverHTML(c), 1) + scaled(backHTML(c), 1);
+      fitTitlesSoon(stage);
       addToRack(c, true);
     }
     if (stage.scrollIntoView) stage.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1203,6 +1253,7 @@ document.addEventListener("click", e => {
     const c = LIB.get(cv.dataset.id);
     if (!c) return;
     modalInner.innerHTML = scaled(coverHTML(c), 1.1) + scaled(backHTML(c), 1.1);
+    fitTitlesSoon(modalInner);
     modal.classList.add("open");
   }
 });
