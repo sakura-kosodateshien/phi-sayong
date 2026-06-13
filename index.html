@@ -848,11 +848,110 @@ const ALL_THEMES = THEMES.concat(EXTRA_THEMES);
 
 const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/generateCover";
 
+/* ===== 表紙イラスト多様性エンジン =====
+   ワンパターン解消の本体。怪異・舞台・構図・登場人物・光・色調を
+   それぞれ独立にランダム選択し、組み合わせ数を一気に増やす。
+   完成プロンプト(prompt)を組み立ててサーバーに渡す。
+   ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
+const ART_STYLE =
+  "1980s Thai 1-baht pulp horror comic cover, cheap newsprint offset print, " +
+  "visible halftone dot texture, slightly off-register colors, lurid hand-painted gouache, " +
+  "garish and melodramatic, thick black ink outlines, aged stained paper";
+const CREATURES = [
+  "a Krasue: a detached floating female head trailing glistening entrails, glowing red eyes",      // 0
+  "a Phi Tai Hong: the vengeful ghost of one who died violently, blood-soaked and deathly pale",   // 1
+  "a Pret (preta): a towering grotesquely emaciated hungry ghost with a needle-thin mouth",        // 2
+  "Mae Nak: a sorrowful long-black-haired woman ghost in a faded traditional dress",               // 3
+  "a Phi Pop: an organ-devouring spirit possessing a hollow-eyed villager",                        // 4
+  "Nang Tani: a green-skinned banana-grove spirit woman in golden traditional Thai dress",         // 5
+  "a Phi Krahang: a gaunt man gliding through the night on woven rice-basket wings",               // 6
+  "a skeletal forest monk in tattered saffron robes with empty glowing eye sockets",               // 7
+  "a reanimated corpse bride climbing from a coffin, rotting yet veiled",                           // 8
+  "Nang Takian: a pale tree spirit emerging from an ancient takhian trunk",                         // 9
+  "a swarm of spectral children with black eyes and bared teeth",                                  // 10
+  "a giant spectral python with a half-human face coiling through the dark",                       // 11
+  "a bloated drowned ghost rising from black water, dripping and waterlogged",                      // 12
+  "a long-tongued grey-skinned ghoul crouching on a rooftop",                                       // 13
+];
+const SETTINGS = [
+  "a moonlit rice paddy, black water mirroring the sky",            // 0
+  "a narrow klong (canal) at night lined with leaning stilt houses",// 1
+  "the rotting interior of an abandoned wooden temple",             // 2
+  "a dense banana grove wrapped in low fog",                        // 3
+  "a flooded riverside night market lit by one oil lamp",           // 4
+  "a cluster of traditional Thai stilt houses in a dark village",   // 5
+  "deep jungle choked with vines and drifting mist",                // 6
+  "the swaying carriage of an overnight provincial train",          // 7
+  "a rural morgue, a sheet-covered body on a steel table",          // 8
+  "a roadside spirit house (san phra phum) glowing in the dark",    // 9
+  "a half-submerged graveyard during monsoon flooding",             // 10
+  "a tall sugarcane field rustling under storm clouds",             // 11
+  "a wet neon-lit alley in 1980s old Bangkok",                      // 12
+  "a wooden pier over still black river water",                     // 13
+];
+const COMPOS = [
+  "extreme close-up of the creature's face filling the frame",
+  "dramatic low angle, the creature looming enormous over tiny figures below",
+  "wide cinematic establishing shot, the creature small but unmistakable",
+  "over-the-shoulder view from a fleeing victim glancing back in terror",
+  "the creature bursting up out of water or through the ground toward the viewer",
+  "split composition: monster fills the top, terrified people cower at the bottom",
+  "off-kilter Dutch angle for chaos and vertigo",
+  "a clawed hand thrusting toward the viewer in forced perspective",
+];
+const CAST = [
+  "a lone terrified child clutching a candle",
+  "a young novice monk recoiling in fear",
+  "an elderly woman frozen in horror",
+  "a courting couple clinging together",
+  "a night-market vendor knocking over their stall",
+  "a songthaew driver scrambling from the cab",
+  "an entire family fleeing with lanterns",
+  "no humans at all — only the creature in an empty eerie scene",
+  "a sleeping person unaware of the horror leaning over them",
+];
+const LIGHTS = [
+  "harsh full-moon light", "the orange glow of a single candle",
+  "a stark lightning flash in a thunderstorm", "cold blue pre-dawn fog",
+  "flickering night-market neon", "one narrow flashlight beam in pitch dark",
+  "a blood-red dusk sky",
+];
+const MOODS = [
+  "sickly green miasma tones", "bruised purple shadows", "lurid blood-red palette",
+  "cold blue moonlit palette", "jaundiced yellow lamplight", "decayed sepia tones",
+];
+function biasPick(theme, table, map) {
+  for (const [re, i] of map) if (re.test(theme)) return table[i];
+  return pick(table);
+}
+function buildImagePrompt(meta, scene, theme = "") {
+  // テーマのキーワードで怪異/舞台をゆるく寄せ、その他の軸は完全ランダム
+  const monster = biasPick(theme, CREATURES, [
+    [/クラスー|krasue|生首|首/i, 0], [/蛇|ナーギ|snake|python/i, 11],
+    [/僧|坊|monk/i, 7], [/花嫁|嫁|bride/i, 8], [/水死|溺|drown|運河|沼/i, 12],
+  ]);
+  const setting = biasPick(theme, SETTINGS, [
+    [/沼|swamp|paddy/i, 0], [/運河|川|klong|canal/i, 1], [/寺|temple/i, 2],
+    [/墓|grave/i, 10], [/列車|バス|train|bus/i, 7], [/市場|屋台|market/i, 4],
+    [/村|家|屋|village/i, 5],
+  ]);
+  const composition = pick(COMPOS), cast = pick(CAST), light = pick(LIGHTS), mood = pick(MOODS);
+  const seed = RI(1, 1000000000);
+  const prompt =
+    `${ART_STYLE}. ${composition}. The creature is ${monster}. ` +
+    `Scene: ${setting}, lit by ${light}, dominated by ${mood}. Also present: ${cast}. ` +
+    `Use a highly varied, original composition — do NOT default to a monk plus a stilt house. ` +
+    `Keep the top-left and bottom-right corners relatively uncluttered for an overlaid speech bubble and price tag. ` +
+    `Variation seed ${seed}.`;
+  return { prompt, seed, monster, setting };
+}
+
 async function makeComic(theme) {
   // ローカルでメタ情報を生成
   const meta = buildLocalMeta(theme);
   const scene = inferScene(theme);
   const base = { ...meta, theme, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null };
+  const art = buildImagePrompt(meta, scene, theme);  // 構図・怪異・舞台などをランダム化した完成プロンプト
 
   // Gemini画像生成を試みる
   try {
@@ -862,7 +961,11 @@ async function makeComic(theme) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal: ctrl.signal,
-      body: JSON.stringify({ theme, titleThai: meta.titleThai, monster: scene.monster, setting: scene.setting }),
+      body: JSON.stringify({
+        theme, titleThai: meta.titleThai,
+        monster: scene.monster, setting: scene.setting, // 後方互換（既存サーバーが使用）
+        prompt: art.prompt, seed: art.seed,             // ★新: サーバーがこれを使うと多様化する
+      }),
     });
     clearTimeout(timer);
     const data = await r.json();
