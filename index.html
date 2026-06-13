@@ -114,13 +114,13 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
 .cHead{position:relative;padding:6px 2px 4px;min-height:84px}
 .cPub{position:absolute;left:0;top:8px;width:62px;border:2px solid var(--red);background:#fffbe8;color:var(--red);text-align:center;font-weight:700;font-size:7.5px;padding:3px 2px;line-height:1.25}
 .cPub .star{display:block;font-size:14px;line-height:1}
-.cTtl{margin-left:66px;text-align:center;font-weight:900;font-size:25px;line-height:1.02;color:var(--red);
+.cTtl{margin-left:66px;text-align:center;font-weight:900;font-size:31px;line-height:1.02;color:var(--red);
   text-shadow:1.5px 1.5px 0 var(--yel), 3px 3px 0 #7a1020, -1px -1px 0 var(--yel);
   transform:scaleY(1.12);letter-spacing:-.01em;word-break:break-all}
 .cTtlJp{margin-left:66px;text-align:center;font-weight:700;font-size:10.5px;letter-spacing:.35em;margin-top:5px;color:#3a2a14}
 /* タイトルを絵に入れる＝雑誌風フルブリード表紙 */
 .cTtlArt{position:absolute;left:8px;right:8px;top:54px;z-index:4;text-align:center;
-  font-size:34px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
+  font-size:42px;line-height:1.0;letter-spacing:-.01em;word-break:break-word;
   filter:drop-shadow(0 2px 4px rgba(0,0,0,.92))}
 .cover.titleArt{padding:6px}
 .magArt{position:relative;width:100%;aspect-ratio:3/4;overflow:hidden;border:2.5px solid #2a1c08;background:#000;line-height:0}
@@ -134,13 +134,16 @@ header .row{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-cont
   color:var(--red);font-weight:700;font-size:7px;padding:1px 5px;white-space:nowrap;line-height:1.2}
 .magSub .cPub2 .star{font-size:9px}
 .magJp{color:#fff;font-weight:700;font-size:9px;letter-spacing:.2em;text-shadow:1px 1px 0 #000,0 0 3px #000}
-.cover.titleArt .cBubble{top:auto;bottom:14%}
 .cArt{position:relative;margin-top:5px;border:2.5px solid #2a1c08;background:#000;line-height:0}
 .cArt svg{width:100%;height:auto;display:block}
-.cBubble{position:absolute;left:7px;top:7px;background:#fffbe8;border:2.5px solid var(--ink);border-radius:50%;
-  padding:9px 13px;font-weight:900;font-size:11px;color:var(--ink);max-width:62%;line-height:1.2;text-align:center;
+.cBubble{position:absolute;background:#fffbe8;border:2.5px solid var(--ink);border-radius:50%;
+  padding:9px 13px;font-weight:900;font-size:11px;color:var(--ink);max-width:60%;line-height:1.2;text-align:center;
   filter:drop-shadow(2px 2px 0 rgba(0,0,0,.4))}
-.cBubble::after{content:"";position:absolute;left:24%;bottom:-12px;border:7px solid transparent;border-top:12px solid var(--ink);transform:rotate(18deg)}
+.cBubble.oval::after{content:"";position:absolute;left:24%;bottom:-12px;border:7px solid transparent;border-top:12px solid var(--ink);transform:rotate(18deg)}
+.cBubble.cap{border-radius:4px;background:#f6e9c2}
+.cBubble.burst{border:none;border-radius:0;background:#ffe24a;color:#a8101a;padding:15px 14px;
+  clip-path:polygon(50% 0,60% 17%,82% 11%,74% 32%,97% 37%,79% 52%,95% 72%,69% 69%,64% 94%,50% 77%,36% 94%,31% 69%,5% 72%,21% 52%,3% 37%,26% 32%,18% 11%,40% 17%);
+  filter:drop-shadow(0 0 1.5px #000) drop-shadow(2px 2px 0 rgba(0,0,0,.4))}
 .cPrice{position:absolute;right:7px;bottom:7px;background:var(--yel);border:2.5px solid var(--ink);
   width:46px;height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-weight:900;color:var(--red);box-shadow:2px 2px 0 rgba(0,0,0,.5);transform:rotate(2deg)}
@@ -823,6 +826,13 @@ const TH_BUBBLES = [
   { thai: "ช่วยด้วย! ผีมา!", jp: "助けて！お化けが来た！" },
   { thai: "อย่ามานะ!!", jp: "来るなー！！" },
   { thai: "มันยังไม่ตาย!", jp: "アイツはまだ死んでいない！" },
+  { thai: "หนีเร็ว!!", jp: "早く逃げろ！！" },
+  { thai: "อย่าเข้ามา!", jp: "近づくな！" },
+  { thai: "วิญญาณกลับมาแล้ว!", jp: "霊が戻ってきた！" },
+  { thai: "มันอยู่ข้างหลังเธอ!", jp: "後ろにいるぞ！" },
+  { thai: "ปล่อยฉันนะ!", jp: "離して！" },
+  { thai: "เลือด...เลือดเต็มไปหมด!", jp: "血だ…血だらけだ！" },
+  { thai: "ไม่นะ! ไม่จริง!", jp: "嘘だ！そんな…！" },
 ];
 // タイトル文字のバリエーション（書体・色・縁取り）。バーツコミックの手描き見出し感を再現。
 const TITLE_STYLES = [
@@ -845,6 +855,9 @@ function buildLocalMeta(theme) {
     titleJp: `${b.jp}の${a.jp}`,
     titleStyle: pick(TITLE_STYLES),
     titleInArt: Math.random() < 0.6,
+    bubbleShape: pick(["oval", "oval", "oval", "burst", "cap"]),
+    bubbleRot: RI(-4, 4),
+    bubbleSpot: RI(0, 3),
     topBannerThai: "เรื่องผีสุดสยอง!",
     speechBubbleThai: bub.thai,
     speechBubbleJp: bub.jp,
@@ -885,9 +898,12 @@ const FUNC_URL = "https://asia-northeast1-hinokikko-ichiji.cloudfunctions.net/ge
    完成プロンプト(prompt)を組み立ててサーバーに渡す。
    ※サーバー側が body.prompt を画像生成にそのまま使うよう小修正が必要(後述)。 */
 const ART_STYLE =
-  "1980s Thai 1-baht pulp horror comic cover, cheap newsprint offset print, " +
-  "visible halftone dot texture, slightly off-register colors, lurid hand-painted gouache, " +
-  "garish and melodramatic, thick black ink outlines, aged stained paper";
+  "Authentic 1980s Thai 1-baht pulp horror comic cover (การ์ตูนเล่มละบาท), " +
+  "hand-painted by a self-taught provincial Thai artist in a naive 'heta-uma' (clumsy-yet-charming) outsider style: " +
+  "anatomy a little off, faces somewhat elongated with subtly asymmetric, unbalanced features whose very wonkiness feels eerie and unsettling, " +
+  "watercolour and gouache washes in an idiosyncratic lurid palette (off greens, bruised purples, sickly yellows, muddy oranges), " +
+  "uneven hand-inked outlines, visible halftone dots and slightly off-register cheap newsprint printing, aged stained paper. " +
+  "NOT polished American/Western superhero comic art, NOT clean digital line art, NOT slick professional rendering";
 const CREATURES = [
   "a Krasue: a detached floating female head trailing glistening entrails, glowing red eyes",      // 0
   "a Phi Tai Hong: the vengeful ghost of one who died violently, blood-soaked and deathly pale",   // 1
@@ -1019,7 +1035,11 @@ function coverHTML(c) {
   const tStyle = `font-family:${ts.f};color:${ts.c};text-shadow:${ts.s};font-weight:${ts.w || 900}`;
   const art = c.imageEl || c.svg;
   const bands = `<span style="background:${p.band1}">รวมนิยายภาพ</span><span style="background:${p.band2}">เล่มเดียวจบ</span><span style="background:${p.band3}">หลายเรื่องหลายรส</span>`;
-  const bubble = `<div class="cBubble thai">${c.speechBubbleThai}</div>`;
+  const bubbleSpots = c.titleInArt
+    ? ["left:7px;bottom:15%", "right:7px;top:44%", "left:7px;top:50%", "left:8px;right:8px;bottom:13%;max-width:none"]
+    : ["left:7px;top:7px", "right:7px;top:7px", "left:7px;top:38%", "right:7px;top:34%"];
+  const bspot = bubbleSpots[c.bubbleSpot ?? 0];
+  const bubble = `<div class="cBubble thai ${c.bubbleShape || "oval"}" style="${bspot};transform:rotate(${c.bubbleRot || 0}deg)">${c.speechBubbleThai}</div>`;
   const price = `<div class="cPrice"><b>${c.priceBaht}</b><small class="thai">บาท</small></div>`;
 
   if (c.titleInArt) {
@@ -1106,7 +1126,7 @@ function addToRack(c, prepend = false) {
   if (prepend && pockets.firstChild) pockets.insertBefore(d, pockets.firstChild);
   else pockets.appendChild(d);
 }
-for (let i = 0; i < 12; i++) {
+for (let i = 0; i < 6; i++) {
   const meta = buildLocalMeta(pick(ALL_THEMES));
   const scene = inferScene(meta.titleJp || "");
   addToRack(register({ ...meta, theme: meta.titleJp, palette: pick(PALETTES), svg: buildLocalSvg(scene), imageEl: null }));
